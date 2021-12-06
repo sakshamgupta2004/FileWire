@@ -1,6 +1,8 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +28,6 @@ public class SearchFileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ((CollapsingToolbarLayout) requireActivity().findViewById(R.id.toolbar_layout)).setTitle("Search");
         requireActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
-
         return inflater.inflate(R.layout.file_search_fragment, container, false);
     }
 
@@ -36,6 +37,22 @@ public class SearchFileFragment extends Fragment {
         EditText searchBox = view.findViewById(R.id.search_box_input);
         view.findViewById(R.id.cancel_search_box).setOnClickListener((o)->{
             searchBox.setText("");
+        });
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                new FileSearcher(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
     }
 }
