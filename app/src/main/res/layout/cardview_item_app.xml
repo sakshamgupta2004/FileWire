@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5dp"
+    cardview:cardCornerRadius="5dp"
+    android:descendantFocusability="blocksDescendants"
+    cardview:cardBackgroundColor="?android:colorBackground"
+    >
+    <CheckBox
+        android:layout_gravity="end"
+        android:elevation="1dp"
+        android:clickable="false"
+        android:id="@+id/checkbox_item_checked_round"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleY="1.3"
+        android:scaleX="1.3"
+        android:button="@drawable/custom_checkbox"
+        android:layout_margin="10dp" />
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/app_list_card_view_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!--    <LinearLayout-->
+<!--        android:focusable="false"-->
+<!--        android:elevation="1dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:gravity="end|top">-->
+
+<!--    </LinearLayout>-->
+
+
+<!--    <LinearLayout-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+        <ImageView
+            cardview:layout_constraintBottom_toTopOf="@id/app_name_tv"
+            cardview:layout_constraintTop_toTopOf="parent"
+            android:padding="10dp"
+            android:id="@+id/app_icon_iv"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:scaleType="fitCenter"
+            />
+        <TextView
+
+            cardview:layout_constraintBottom_toBottomOf="parent"
+            android:padding="3dp"
+            android:id="@+id/app_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_horizontal"
+            android:text="AppName"/>
+
+<!--    </LinearLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

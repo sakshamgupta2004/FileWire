@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/open_wifi_settings_image_view"
+            android:src="@drawable/ic_wifi"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
+            android:text="@string/wi_fi_status"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAlignment="gravity"
+            android:id="@+id/ipaddressTv"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="bottom">
+
+        <TextView
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAlignment="gravity"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@string/how_to_connect"/>
+        <ImageView
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:src="@drawable/instruction_basic"
+            />
+        <TextView
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="3dp"
+            android:id="@+id/instruction_connect_pc_simple_tv"
+            android:gravity="center_horizontal|center_vertical"
+            android:textAlignment="gravity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:paddingBottom="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:text="@string/start_to_be_able_to_manage_files_using_a_computer"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:enabled="false"
+            app:backgroundTint="@color/button_color"
+            android:textColor="@color/white"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAlignment="gravity"
+            android:textSize="12sp"
+            android:id="@+id/connection_link_ftp"
+            android:visibility="gone"
+            android:textAllCaps="false"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            app:backgroundTint="#00cc00"
+            android:textColor="#000000"
+            android:paddingEnd="40dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:textAlignment="gravity"
+            android:textSize="15sp"
+            android:text="@string/start"
+            app:iconTint="#000000"
+            app:icon="@drawable/ic_baseline_play_arrow_24"
+            android:id="@+id/start_connection_pc_button"/>
+
+    </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+</LinearLayout>

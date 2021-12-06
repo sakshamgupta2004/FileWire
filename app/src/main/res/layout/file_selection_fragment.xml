@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+<com.google.android.material.tabs.TabLayout
+
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    android:id="@+id/file_selection_tl"
+    app:layout_constraintTop_toTopOf="parent"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    app:tabIndicatorAnimationMode="elastic"
+    app:tabMode="scrollable"
+    />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/file_selection_vp"
+        app:layout_constraintTop_toBottomOf="@id/file_selection_tl"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="@android:color/transparent"
+        android:gravity="bottom|start">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/send_fab_substitute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_send_24"
+            android:layout_marginBottom="30dp"
+            app:borderWidth="0dp"
+            android:layout_marginStart="24dp"
+            android:backgroundTint="@color/button_color"
+            app:tint="@color/white"
+            />
+    </LinearLayout>
+
+
+
+    <eightbitlab.com.blurview.BlurView
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:id="@+id/blurView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:id="@+id/send_actions_buttons"
+        android:background="#11000000"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal"
+        android:padding="20dp">
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/selected"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:textAlignment="gravity"
+            android:layout_weight="1"
+            android:textSize="8sp"
+            android:clickable="false"
+            android:id="@+id/selected_files_counter"
+            android:backgroundTint="@color/button_color"
+            android:textColor="@color/button_text_color"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:borderWidth="0dp"
+            android:src="@drawable/ic_baseline_send_24"
+            app:tint="@null"
+            android:id="@+id/send_files_fab"
+            android:backgroundTint="@color/button_color"/>
+
+    </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

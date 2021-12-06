@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:id="@+id/file_selection_file_explorer_navigation"
+        android:background="?android:attr/colorBackground"/>
+
+    <LinearLayout
+        android:background="?android:attr/colorBackground"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/select_all"
+            android:gravity="center_vertical"
+            />
+        <CheckBox
+            android:id="@+id/select_all_checkbox_file_list"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/file_selection_file_explorer_files"/>
+
+        <com.sugarsnooper.filetransfer.MyFastScroll
+            android:id="@+id/fastscroll"
+            app:fastscroll__handleColor="?colorControlActivated"
+            app:fastscroll__bubbleColor="?colorControlActivated"
+            app:fastscroll__bubbleTextAppearance="@style/StyledScrollerTextAppearance"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+
+</LinearLayout>

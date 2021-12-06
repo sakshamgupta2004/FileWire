@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_cards">20dp</dimen>
+    <dimen name="card_side_main_page">150dp</dimen>
+    <dimen name="card_corner_radius_main_page">10dp</dimen>
+    <dimen name="image_margin_card_main_page">20dp</dimen>
+    <dimen name="card_side_main_page_image">90dp</dimen>
+    <dimen name="popup_scroll_text_size">14sp</dimen>
+    <dimen name="scroll_popup_min_size">44dp</dimen>
+    <dimen name="button_corner">10dp</dimen>
+    <dimen name="padding_image_popup_preview">25dp</dimen>
+</resources>

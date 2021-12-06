@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<LinearLayout
+    android:id="@+id/overlay_image_view_and_exo_player"
+    android:background="#88000000"
+    app:layout_constraintTop_toTopOf="parent"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+    <ImageView
+        android:id="@+id/back_button_image_view_fullscreen"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_baseline_arrow_back_24"
+        android:contentDescription="@string/back" />
+    <TextView
+        android:layout_weight="1"
+        android:gravity="center_vertical|start"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:scrollHorizontally="true"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textAlignment="gravity"
+        android:textColor="#ffffff"
+        android:id="@+id/photo_view_name"/>
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/info_button_image_view_fullscreen"
+        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_info_outline_black_24dp"
+        android:contentDescription="@string/information" />
+</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

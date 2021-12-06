@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/search_file_menuitem"
+        android:title="Search File"
+        android:icon="@drawable/ic_baseline_search_24"
+        app:showAsAction="always"/>
+<item
+    android:id="@+id/open_explorer"
+    android:title="@string/select_files1"
+    android:icon="@drawable/ic_baseline_attach_file_24"
+    app:showAsAction="ifRoom"/>
+    <item
+        android:visible="false"
+        android:id="@+id/pc_connect_menu_item"
+        android:title="@string/connect_to_pc" />
+</menu>

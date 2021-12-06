@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        >
+
+        <!--<ProgressBar-->
+        <!--    android:layout_width="match_parent"-->
+        <!--    android:layout_height="wrap_content"-->
+        <!--    android:layout_gravity="center_vertical"-->
+        <!--    android:foregroundGravity="center_horizontal"-->
+        <!--    android:id="@+id/spinner"-->
+        <!--    android:indeterminate="true"-->
+        <!--    />-->
+
+        <com.github.ybq.android.spinkit.SpinKitView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/spinner"
+            style="@style/SpinKitView.Large.MultiplePulseRing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="60dp"
+            android:layout_gravity="center"
+            app:SpinKit_Color="@color/colorAccent" />
+
+        <TextView
+            android:id="@+id/server_initialization_status"
+            android:gravity="center_horizontal"
+            android:text="@string/initializing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:typeface="monospace"/>
+
+    </LinearLayout>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/send_more"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/button_color"
+        android:visibility="gone"
+        android:id="@+id/button_select_more_files"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -1,0 +1,99 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="DarkTheme" parent="Theme.MaterialComponents.DayNight">
+        <!-- Customize your theme here. -->
+        <item name="android:windowContentTransitions">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="android:actionOverflowButtonStyle">@style/ActionButtonOverflow</item>
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+    </style>
+
+    <style name="ActionButtonOverflow" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">#BBFFFFFF</item>
+    </style>
+        <style name="PauseDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+            <item name="android:windowAnimationStyle">@style/PauseDialogAnimation</item>
+        </style>
+
+        <style name="PauseDialogAnimation">
+            <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
+            <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
+        </style>
+    <style name="AppTheme.Draggable" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+    <style name="DialogThemeExoPlayer" parent="android:Theme.Dialog">
+
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <!-- No backgrounds, titles or window float -->
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+
+
+
+
+    <style name="ForceDarkFileBrowserTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--  It should be true otherwise action mode will not overlay filebrowser_toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:actionModeBackground">@color/actionModeToolbar</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">true</item>
+    </style>
+
+
+
+
+
+
+
+    <style name="StyledScrollerTextAppearance" parent="TextAppearance.MaterialComponents.Headline5">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+
+
+
+
+
+    <style name="ImageViewerDialog" parent="android:Theme.Translucent.NoTitleBar"/>
+
+    <style name="ImageViewerDialog.NoStatusBar" parent="android:Theme.Translucent.NoTitleBar.Fullscreen"/>
+
+    <style name="ImageViewerDialog.Default" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+
+    <style name="LoginDialog" parent="Theme.AppCompat.DayNight.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@style/PauseDialogAnimation</item>
+    </style>
+
+    <style name="collapsedTitleTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="expandedTitleTextAppearance" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">34dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
+</resources>

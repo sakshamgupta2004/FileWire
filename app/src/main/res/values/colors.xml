@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <color name="colorAccent">#40B3FF</color>-->
+    <color name="colorAccent">@color/button_color</color>
+    <color name="colorPrimaryDark">#213E88</color>
+    <color name="aqua_dark">#3649F4</color>
+
+    <!--    <color name="aqua">#99555555</color>-->
+    <color name="aqua">#99555555</color>
+<!--    <color name="button_color">#238FEE</color>-->
+    <color name="button_color">#4444DD</color>
+    <color name="app_selected_color">#9500F2FA</color>
+    <color name="button_text_color">#ffffff</color>
+    <color name="light_grey">#88C0C0C0</color>
+    <color name="media_selected_border">@color/app_selected_color</color>
+    <color name="button_color_red">#A30D02</color>
+    <color name="white">#ffffff</color>
+    <color name="button_color_green">#00cc00</color>
+    <color name="black">#000000</color>
+    <color name="lightest_grey">#EEEEEE</color>
+
+</resources>
