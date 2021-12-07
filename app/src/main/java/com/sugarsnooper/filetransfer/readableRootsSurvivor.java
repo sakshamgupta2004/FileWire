@@ -43,6 +43,7 @@ public class readableRootsSurvivor extends Service implements Runnable {
     private static Map<String, Long> imagesMap = null;
     private static Map<String, Long> videosMap = null;
     private static Map<String, Long> galleryMap = null;
+    private static List<File> allFileList = null;
     private static List<File> docsList = null;
     private static List<File> archivesList = null;
     private static List<File> audioList = null;
@@ -102,6 +103,7 @@ public class readableRootsSurvivor extends Service implements Runnable {
         archivesList = new CopyOnWriteArrayList<>(readableRoots.getArchives());
         audioList = new CopyOnWriteArrayList<>(readableRoots.getAudio());
         installerList = new CopyOnWriteArrayList<>(readableRoots.getInstallers());
+        allFileList = new CopyOnWriteArrayList<>(readableRoots.getAllFiles());
         readableRoots = null;
     }
 
@@ -183,6 +185,16 @@ public class readableRootsSurvivor extends Service implements Runnable {
             }
         }
         return docsList;
+    }
+    public static List<File> getAllFiles() {
+        while (allFileList == null) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return allFileList;
     }
 
     @Nullable
@@ -283,6 +295,7 @@ public class readableRootsSurvivor extends Service implements Runnable {
                 archivesList = new CopyOnWriteArrayList<>(readableRoots.getArchives());
                 audioList = new CopyOnWriteArrayList<>(readableRoots.getAudio());
                 installerList = new CopyOnWriteArrayList<>(readableRoots.getInstallers());
+                allFileList = new CopyOnWriteArrayList<>(readableRoots.getAllFiles());
                 readableRoots = null;
             }
 

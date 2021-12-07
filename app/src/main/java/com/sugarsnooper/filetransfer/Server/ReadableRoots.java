@@ -49,6 +49,7 @@ public class ReadableRoots {
         }
     }
     private Context context;
+    ArrayList<File> allFileList = new ArrayList<File>();
     ArrayList<File> audio = new ArrayList<File>();
     ArrayList<File> docs = new ArrayList<File>();
     ArrayList<File> archives = new ArrayList<File>();
@@ -248,6 +249,9 @@ public class ReadableRoots {
         }
         return archives;
     }
+    public ArrayList<File> getAllFiles(){
+        return allFileList;
+    }
 
 
     private void search_for_media(File file) {
@@ -286,8 +290,9 @@ public class ReadableRoots {
 
     private void add_to_list_if_mediafile(File subfile) {
         files++;
-        if ((!subfile.getPath().toLowerCase().contains("/android/data/")) && (!subfile.getPath().toLowerCase().contains("/android/obb/")) && (!subfile.getParentFile().getName().toLowerCase().contains("thumbnails"))) {
 
+        if ((!subfile.getPath().toLowerCase().contains("/android/data/")) && (!subfile.getPath().toLowerCase().contains("/android/obb/")) && (!subfile.getParentFile().getName().toLowerCase().contains("thumbnails"))) {
+            allFileList.add(subfile);
             if (subfile.length() > 0) {
                 switch (FileTypeLookup.fileType(subfile.getName())) {
                     case 1:

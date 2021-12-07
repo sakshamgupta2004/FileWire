@@ -4,6 +4,28 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <FrameLayout
+        android:id="@+id/fileSearchProgressBar"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        tools:ignore="UselessParent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical">
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="true"/>
+
+        </FrameLayout>
+
+    </FrameLayout>
+
     <androidx.cardview.widget.CardView
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="20dp"
@@ -49,5 +71,11 @@
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="90dp"
+        android:id="@+id/searchResultsRecyclerView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

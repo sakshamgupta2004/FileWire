@@ -136,11 +136,12 @@ public class FileSelection extends Fragment {
     private View view;
     private boolean wifiPanelWasOpen = false;
 
-    private AppSelectionFragment appSelectionFragment = null;
-    private Photos photosFragment = null;
-    private VideoGalleryFragment videoGalleryFragment = null;
-    private Gallery galleryFragment = null;
-    private FragmentContainerFileSelection filesFragments = null;
+    public static AppSelectionFragment appSelectionFragment = null;
+    public static Photos photosFragment = null;
+    public static VideoGalleryFragment videoGalleryFragment = null;
+    public static Gallery galleryFragment = null;
+    public static FragmentContainerFileSelection filesFragments = null;
+    public static SearchFileFragment searchFragment = null;
     private static ActionBar ab;
     private FloatingActionButton selectedFabAppbar;
     private FloatingActionButton sendFabAppbar;
@@ -601,7 +602,7 @@ public class FileSelection extends Fragment {
         view.findViewById(R.id.send_files_fab).setOnClickListener(v -> send_fab_click());
         view_counter = view.findViewById(R.id.selected_files_counter);
         view_counter.setOnClickListener(v -> onViewCounterSelectedClick());
-        view_counter.setText("Selected (0)");
+        view_counter.setText("Selected: 0 (0.00 B)");
     }
 
     private void send_fab_click() {
@@ -758,6 +759,8 @@ public class FileSelection extends Fragment {
                                 videoGalleryFragment.onChange();
                                 galleryFragment.onChange();
                                 filesFragments.onChange();
+                                if (searchFragment != null)
+                                    searchFragment.onChange();
                                 selected_counter--;
                                 refreshTotalSize();
                                 if (selected_counter == 0) {
@@ -888,6 +891,8 @@ public class FileSelection extends Fragment {
                             videoGalleryFragment.onChange();
                             galleryFragment.onChange();
                             filesFragments.onChange();
+                            if (searchFragment != null)
+                                searchFragment.onChange();
                             refreshTotalSize();
                             dialog.dismiss();
                         }
@@ -1563,7 +1568,8 @@ public class FileSelection extends Fragment {
             return true;
         }
         else if (item.getItemId() == R.id.search_file_menuitem) {
-            getActivity().getSupportFragmentManager().beginTransaction().hide(this).add(R.id.fragment_container, new SearchFileFragment(), "SEARCH_FILES_FRAGMENT").commit();
+            searchFragment = new SearchFileFragment();
+            getActivity().getSupportFragmentManager().beginTransaction().hide(this).add(R.id.fragment_container, searchFragment, "SEARCH_FILES_FRAGMENT").commit();
             return true;
         }
         else {

@@ -557,7 +557,12 @@ public class AppSelectionFragment extends Fragment implements ListChangeListener
                 });
 
 //            app_name_tv.setText(apps.get(position).loadLabel(requireContext().getPackageManager()));
-                app_name_tv.setText(appsList.get(position).getName());
+                try {
+                    app_name_tv.setText(appsList.get(position).getName().substring(0, appsList.get(position).getName().length() - 4));
+                }
+                catch (Exception e) {
+                    app_name_tv.setText(appsList.get(position).getName());
+                }
                 Glide.with(requireContext()).load(new File(requireContext().getExternalCacheDir().getPath() + File.separator + "APPThumbnails" + File.separator + appPackageList.get(position) + ".jpeg")).transition(DrawableTransitionOptions.withCrossFade()).circleCrop().into(app_icon_iv);
             }
         }
