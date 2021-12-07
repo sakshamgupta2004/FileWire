@@ -107,14 +107,8 @@ public class Send_Activity extends CustomisedAdActivity {
 
     @Override
     public boolean onNavigateUp() {
-        if (getIntent().getBooleanExtra(Strings.FileSelectionRequest, false)){
-            finish();
-            return true;
-        }
-        else {
-            onBackPressed();
-            return false;
-        }
+        onBackPressed();
+        return false;
     }
 
     @Override
@@ -137,6 +131,8 @@ public class Send_Activity extends CustomisedAdActivity {
         else if (iv != null) {
             iv.close();
         }
+        else if (getIntent().getBooleanExtra(Strings.FileSelectionRequest, false))
+            finish();
         else{
             createDialog();
         }
