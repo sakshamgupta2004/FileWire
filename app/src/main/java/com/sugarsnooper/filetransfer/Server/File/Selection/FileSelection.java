@@ -110,6 +110,7 @@ import eightbitlab.com.blurview.RenderScriptBlur;
 import static android.view.View.GONE;
 import static com.sugarsnooper.filetransfer.Strings.TAG;
 
+
 public class FileSelection extends Fragment {
     private static final int REQUEST_CODE_FOR_PICK_FILE = 19690;
     public static List<Media> videoList;
