@@ -121,10 +121,11 @@ public class SearchFileFragment extends Fragment {
                 int insertPos = 0;
                 for (Media m : searchResultsMedia) {
 
-                    insertPos++;
+
                     if (fs.searchCompare(searchBox.getText().toString().toLowerCase(), m.getName()) > levenshteinDistance) {
                         break;
                     }
+                    insertPos++;
                 }
                 int finalInsertPos = insertPos;
                 getActivity().runOnUiThread(new Runnable() {

@@ -1,12 +1,14 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.sugarsnooper.filetransfer.readableRootsSurvivor;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.fileAndFolderList;
@@ -100,15 +102,18 @@ public class FileSearcher {
             double numberofmatches = 0.0;
             for (String query: queries) {
 
-                if (fileName.toLowerCase().contains(query) && !query.trim().isEmpty()) {
+                if (fileName.contains(query) && !query.trim().isEmpty()) {
                     numberofmatches += 100.0;
                 }
                 else {
                     char[] chars = query.toCharArray();
                     int numOfCharsInFile = 0;
                     for (char c : chars) {
-                        if (fileName.toLowerCase().contains(String.valueOf(c))) {
+                        if (fileName.contains(String.valueOf(c))) {
                             numOfCharsInFile++;
+                        }
+                        else {
+                            break;
                         }
                     }
                     if (numOfCharsInFile == query.length()) {
@@ -169,36 +174,47 @@ public class FileSearcher {
                 permutation(prefix + str.charAt(i), str.substring(0, i) + str.substring(i+1, n), c);
         }
     }
+    private HashMap<String, List<String>> permutations = new HashMap<String, List<String>>();
     private List<String> generatePermutations(String query) {
-//        List<String> permutations = new ArrayList<String>();
-//        for (int i = 0; i < query.length(); i++) {
-//            String newQuery = "";
-//            if (i > 0) {
-//                newQuery = query.substring(0, i);
-//            }
-//            if (i < query.length() - 1) {
-//                newQuery += query.substring(i + 1);
-//            }
-//            for (int j = 0; j < newQuery.length(); j++) {
-//                String permutation = "";
-//                if (j > 0) {
-//                    permutation = newQuery.substring(0, j);
-//                }
-//                permutation += query.substring(i, i+1);
-//                if (j < query.length() - 1) {
-//                    permutation += newQuery.substring(j);
-//                }
-//                permutations.add(permutation);
-//            }
-//
-//        }
-//        permutations = removeDuplicates(permutations);
-//        return permutations;
-        StringBuilder sb = new StringBuilder();
-        permutation("", query, sb);
-        List<String> permutations = new ArrayList<String>(Arrays.asList(sb.toString().split("\n")));
+
+        if (!permutations.containsKey(query) && query.length() <= 7) {
+            StringBuilder sb = new StringBuilder();
+            permutation("", query, sb);
+            List<String> permutations = new ArrayList<String>(Arrays.asList(sb.toString().split("\n")));
+            permutations = removeDuplicates(permutations);
+            this.permutations.put(query, permutations);
+            Log.e("Permute", query);
+            return permutations;
+        }
+        else if (!permutations.containsKey(query) && query.length() > 7) {
+        List<String> permutations = new ArrayList<String>();
+        for (int i = 0; i < query.length(); i++) {
+            String newQuery = "";
+            if (i > 0) {
+                newQuery = query.substring(0, i);
+            }
+            if (i < query.length() - 1) {
+                newQuery += query.substring(i + 1);
+            }
+            for (int j = 0; j < newQuery.length(); j++) {
+                String permutation = "";
+                if (j > 0) {
+                    permutation = newQuery.substring(0, j);
+                }
+                permutation += query.substring(i, i+1);
+                if (j < query.length() - 1) {
+                    permutation += newQuery.substring(j);
+                }
+                permutations.add(permutation);
+            }
+
+        }
         permutations = removeDuplicates(permutations);
+        this.permutations.put(query, permutations);
         return permutations;
+        }
+        else
+            return permutations.get(query);
     }
     private <T> List<T> removeDuplicates(List<T> list)
     {
