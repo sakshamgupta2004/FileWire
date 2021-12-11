@@ -16,7 +16,6 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -1257,21 +1256,12 @@ public class VideoGalleryFragment extends Fragment implements ListChangeListener
         }
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
-    private static Bitmap takeScreenShot(Activity activity)
-    {
-        View view = activity.getWindow().getDecorView();
-        view.setDrawingCacheEnabled(true);
-//        view.buildDrawingCache();
-        Bitmap b1 = Bitmap.createBitmap(view.getDrawingCache());
-        Rect frame = new Rect();
-        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
-        int statusBarHeight = frame.top;
-        int width = activity.getWindowManager().getDefaultDisplay().getWidth();
-        int height = activity.getWindowManager().getDefaultDisplay().getHeight();
-
-        Bitmap b = Bitmap.createBitmap(b1, 0, statusBarHeight, width, height  - statusBarHeight);
-        view.destroyDrawingCache();
-        return b;
+    private static Bitmap takeScreenShot(Activity activity) {
+        View screenView = activity.getWindow().getDecorView();
+        screenView.setDrawingCacheEnabled(true);
+        Bitmap bitmap = Bitmap.createBitmap(screenView.getDrawingCache());
+        screenView.setDrawingCacheEnabled(false);
+        return bitmap;
     }
     public Bitmap fastblur(Bitmap sentBitmap, int radius) {
         Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);

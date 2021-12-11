@@ -23,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,9 +46,9 @@ import com.sugarsnooper.filetransfer.R;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.appSelectionFragment;
 import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.filesFragments;
@@ -64,7 +65,7 @@ public class SearchFileFragment extends Fragment {
     private RecyclerView searchResults;
     private searchResultsAdapter resultsAdapter;
 
-    private List<Media> searchResultsMedia = new ArrayList<Media>();
+    private List<Media> searchResultsMedia = new CopyOnWriteArrayList<Media>();
 
     public static void backPressed(CustomisedAdActivity activity) {
         activity.getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
@@ -101,17 +102,41 @@ public class SearchFileFragment extends Fragment {
         searchProgress.setVisibility(View.INVISIBLE);
         fs = new FileSearcher(new FileSearcher.SearchResult() {
             @Override
+            public void tooManyResults() {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "Too many results. Please be more specific for what you are searching. ", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
             public void searchCompleted() {
                 searchProgress.setVisibility(View.INVISIBLE);
             }
 
             @Override
-            public void foundResult(Media scanResult) {
+            public void foundResult(Media scanResult, double levenshteinDistance) {
+                int insertPos = 0;
+                for (Media m : searchResultsMedia) {
+
+                    insertPos++;
+                    if (fs.searchCompare(searchBox.getText().toString().toLowerCase(), m.getName()) > levenshteinDistance) {
+                        break;
+                    }
+                }
+                int finalInsertPos = insertPos;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        searchResultsMedia.add(scanResult);
-                        resultsAdapter.notifyItemInserted(searchResultsMedia.size() - 1);
+
+                        searchResultsMedia.add(finalInsertPos, scanResult);
+                        resultsAdapter.notifyItemInserted(finalInsertPos);
+
+                        if (finalInsertPos == 0) {
+                            searchResults.scrollToPosition(0);
+                        }
                     }
                 });
             }
