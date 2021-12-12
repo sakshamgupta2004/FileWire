@@ -1,5 +1,8 @@
 package com.sugarsnooper.filetransfer;
 
+import android.net.Uri;
+
+import com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection;
 import com.sugarsnooper.filetransfer.Server.HTTPPOSTServer;
 
 import java.io.File;
@@ -31,7 +34,8 @@ public class ZipUtils {
 //    }
 
     public void zipIt(OutputStream fos, String filename, HTTPPOSTServer.ServerListener listener) {
-        generateFileList(SOURCE_FOLDER);
+//        generateFileList(SOURCE_FOLDER);
+        fileList = FileSelection.selectedFolderMap.get(Uri.fromFile(SOURCE_FOLDER).toString());
         byte[] buffer = new byte[409600];
         String source = SOURCE_FOLDER.getName();
         ZipOutputStream zos = null;

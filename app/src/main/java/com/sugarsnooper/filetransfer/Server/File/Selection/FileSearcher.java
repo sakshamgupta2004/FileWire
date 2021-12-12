@@ -140,6 +140,8 @@ public class FileSearcher {
                                         hasWithOneCharRemoved = true;
                                         break;
                                     }
+
+                                    //Add search condition for fist-> first
                                 }
                                 if (!hasWithOneCharRemoved) {
                                     break;

@@ -1,5 +1,6 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments;
 
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -55,6 +56,7 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -126,31 +128,56 @@ public class FileExplorer extends Fragment implements ListChangeListener {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isCheckBoxStateManuallyChanged) {
                     if (isChecked) {
+                        ProgressDialog pd = new ProgressDialog(getActivity());
+                        pd.setCancelable(false);;
+                        pd.setTitle("");
+                        pd.setMessage("Please Wait");
 
-                        int num_items_changed = 0;
-                        for (File file : filesToShow) {
+                        pd.show();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
 
-                            if (!file.isDirectory()) {
-                                boolean state = !(fileAndFolderListPositionTableW_R_T_URI.containsKey(file.getAbsolutePath()) && fileAndFolderList.get(fileAndFolderListPositionTableW_R_T_URI.get(file.getAbsolutePath()).intValue()).isChecked());
-                                if (state) {
-                                    fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), file.length(), file.lastModified(), true, file));
-                                    fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
-                                    num_items_changed ++;
 
+
+
+                                int num_items_changed = 0;
+                                for (File file : filesToShow) {
+
+                                    if (!file.isDirectory()) {
+                                        boolean state = !(fileAndFolderListPositionTableW_R_T_URI.containsKey(file.getAbsolutePath()) && fileAndFolderList.get(fileAndFolderListPositionTableW_R_T_URI.get(file.getAbsolutePath()).intValue()).isChecked());
+                                        if (state) {
+                                            fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), file.length(), file.lastModified(), true, file));
+                                            fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
+                                            num_items_changed ++;
+
+                                        }
+                                    }
+                                    else {
+                                        boolean state = !(fileAndFolderListPositionTableW_R_T_URI.containsKey(file.getAbsolutePath()) && fileAndFolderList.get(fileAndFolderListPositionTableW_R_T_URI.get(file.getAbsolutePath()).intValue()).isChecked());
+                                        if (state) {
+                                            long[] size = {0L};
+                                            List<String> fileList = new ArrayList<String>();
+                                            FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileList);
+                                            generateFileList(file, file, fileList, size);
+                                            fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), size[0], file.lastModified(), true, true));
+                                            fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
+                                            num_items_changed ++;
+                                        }
+                                    }
                                 }
-                            }
-                            else {
-                                boolean state = !(fileAndFolderListPositionTableW_R_T_URI.containsKey(file.getAbsolutePath()) && fileAndFolderList.get(fileAndFolderListPositionTableW_R_T_URI.get(file.getAbsolutePath()).intValue()).isChecked());
-                                if (state) {
-                                    fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), folderSize(file), file.lastModified(), true, true));
-                                    fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
-                                    num_items_changed ++;
-                                }
-                            }
-                        }
-                        recyclerViewItems.getAdapter().notifyDataSetChanged();
+                                int finalNum_items_changed = num_items_changed;
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pd.dismiss();
+                                        recyclerViewItems.getAdapter().notifyDataSetChanged();
+                                        increase_counter_by(finalNum_items_changed);
 
-                        increase_counter_by(num_items_changed);
+                                    }
+                                });
+                            }
+                        }).start();
 
                     } else {
 
@@ -391,20 +418,43 @@ public class FileExplorer extends Fragment implements ListChangeListener {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        boolean state = !holder.checkBox.isChecked();
-                        holder.checkBox.setChecked(state);
-                        if (state) {
-                            fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), folderSize(file), file.lastModified(), true, true));
-                            fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
-                            FileSelection.selected_item_counter_up();
-                        }
-                        else {
-                            FileSelection.selected_item_counter_down();
-                            String uri = file.getAbsolutePath();
-                            int i = fileAndFolderListPositionTableW_R_T_URI.get(uri);
-                            fileAndFolderList.get(i).setChecked(false);
-                        }
-                        autotickCheckBoxifAllSelected(true);
+                        ProgressDialog pd = new ProgressDialog(getActivity());
+                        pd.setCancelable(false);;
+                        pd.setTitle("");
+                        pd.setMessage("Please Wait");
+
+                        pd.show();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long[] size = {0L};
+                                List<String> fileList = new ArrayList<String>();
+                                FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileList);
+                                generateFileList(file, file, fileList, size);
+                                long foldersize = size[0];
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pd.dismiss();
+                                        boolean state = !holder.checkBox.isChecked();
+                                        holder.checkBox.setChecked(state);
+                                        if (state) {
+
+                                            fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), foldersize, file.lastModified(), true, true));
+                                            fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
+                                            FileSelection.selected_item_counter_up();
+                                        }
+                                        else {
+                                            FileSelection.selected_item_counter_down();
+                                            String uri = file.getAbsolutePath();
+                                            int i = fileAndFolderListPositionTableW_R_T_URI.get(uri);
+                                            fileAndFolderList.get(i).setChecked(false);
+                                        }
+                                        autotickCheckBoxifAllSelected(true);
+                                    }
+                                });
+                            }
+                        }).start();
                         return true;
                     }
 
@@ -609,16 +659,40 @@ public class FileExplorer extends Fragment implements ListChangeListener {
         }
     }
 
-    private long folderSize(File directory) {
+    private long folderSize(File directory, String originalDirUri) {
         long length = 0;
         if (directory.canRead()) {
             for (File file : directory.listFiles()) {
-                if (file.isFile())
+                if (file.isFile()) {
                     length += file.length();
+                }
                 else
-                    length += folderSize(file);
+                    length += folderSize(file, originalDirUri);
             }
         }
         return length;
+    }
+
+    public void generateFileList(File node, File SOURCE_FOLDER, List<String> fileList, long[] totalZipSize) {
+        // add file only
+        if (node.isFile() && node.canRead()) {
+            fileList.add(generateZipEntry(node.toString(), SOURCE_FOLDER));
+            totalZipSize[0] += node.length();
+        }
+
+        if (node.isDirectory() && node.canRead()) {
+            String[] subNote = node.list();
+            for (String filename: subNote) {
+                generateFileList(new File(node, filename), SOURCE_FOLDER, fileList, totalZipSize);
+            }
+            if (subNote.length == 0) {
+                if (node != SOURCE_FOLDER)
+                    fileList.add(generateZipEntry(node.toString(), SOURCE_FOLDER));
+            }
+        }
+    }
+
+    private String generateZipEntry(String file, File SOURCE_FOLDER) {
+        return file.substring(SOURCE_FOLDER.getPath().length() + 1, file.length());
     }
 }

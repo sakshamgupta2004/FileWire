@@ -120,6 +120,7 @@ public class FileSelection extends Fragment {
     public static List<Media> galleryList;
     public static List<Media> fileAndFolderList;
     public static HashMap<String, Integer> fileAndFolderListPositionTableW_R_T_URI;
+    public static HashMap<String, List<String>> selectedFolderMap;
     public static int gridExtraItems = 6;
     private static ExtendedFloatingActionButton view_counter;
     public static ExtendedFloatingActionButton fab1, fab2, fab3;
@@ -589,6 +590,7 @@ public class FileSelection extends Fragment {
         galleryList = new CopyOnWriteArrayList<>();
         fileAndFolderList = new CopyOnWriteArrayList<>();
         fileAndFolderListPositionTableW_R_T_URI = new HashMap<>();
+        selectedFolderMap = new HashMap<>();
         fileList = new CopyOnWriteArrayList<>();
 
         //autoRefreshSelectedSize();
