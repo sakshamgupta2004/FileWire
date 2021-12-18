@@ -1,18 +1,24 @@
 package com.sugarsnooper.filetransfer.Server;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -44,7 +50,14 @@ public class Send_Activity extends CustomisedAdActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_container);
 
-
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
+            startFragment();
+        }
+        else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE }, 1979);
+            }
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
         setActionBar(toolbar);
@@ -53,42 +66,35 @@ public class Send_Activity extends CustomisedAdActivity {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
         }
-//        blurViewTopLevel = findViewById(R.id.topLevelBlurView);
-//        float radius = 25f;
-//
-//        View decorView = getWindow().getDecorView();
-//        //ViewGroup you want to start blur from. Choose root as close to BlurView in hierarchy as possible.
-//        ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
-//        //Set drawable to draw in the beginning of each blurred frame (Optional).
-//        //Can be used in case your layout has a lot of transparent space and your content
-//        //gets kinda lost after after blur is applied.
-//        Drawable windowBackground = decorView.getBackground();
-//        blurViewTopLevel.setupWith(rootView)
-//                .setFrameClearDrawable(windowBackground)
-//                .setBlurAlgorithm(new RenderScriptBlur(this))
-//                .setBlurRadius(radius)
-//                .setBlurAutoUpdate(true)
-//                .setHasFixedTransformationMatrix(true);
-//
-//        blurViewTopLevel.setVisibility(View.GONE);
-
         hostedFiles = new CopyOnWriteArrayList<>();
-//        hostedFiles.add(new String[]{"Hello", "123456", ".mp4"});
-//        hostedFiles.add(new String[]{"Hello", "123456", ".mp4"});
-//        hostedFiles.add(new String[]{"Hello", "123456", ".mp4"});
-//        hostedFiles.add(new String[]{"Hello", "123456", ".mp4"});
-//        hostedFiles.add(new String[]{"Hello", "123456", ".mp4"});
-        Fragment fragment = new FileSelection();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(Strings.FileSelectionRequest, getIntent().getBooleanExtra(Strings.FileSelectionRequest, false));
-        fragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, "FILE_SELECTION_FRAGMENT").commit();
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 ((AppBarLayout) findViewById(R.id.appbar)).setExpanded(false, true);
             }
         }, 1000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1979) {
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                startFragment();
+            }
+            else {
+                Toast.makeText(this, "Please provide storage permission to select files", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
+
+    private void startFragment() {
+        Fragment fragment = new FileSelection();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(Strings.FileSelectionRequest, getIntent().getBooleanExtra(Strings.FileSelectionRequest, false));
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, "FILE_SELECTION_FRAGMENT").commit();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
@@ -1242,6 +1243,7 @@ public class FileSelection extends Fragment {
         }).start();
     }
 
+    @SuppressLint("Range")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         int files_too_large = 0;
@@ -1252,10 +1254,12 @@ public class FileSelection extends Fragment {
                     for(int i = 0; i < data.getClipData().getItemCount(); i++) {
                         try {
                             Uri uri = data.getClipData().getItemAt(i).getUri();
-                            InputStream is = getContext().getContentResolver().openInputStream(uri);
-                            long sizeOfInputStram = is.available();
-                            if (sizeOfInputStram > 0) {
-                                fileList.add(new Media(uri, getFileName(uri), sizeOfInputStram, 0, true));
+                            Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+                            cursor.moveToFirst();
+                            //InputStream is = getContext().getContentResolver().openInputStream(uri);
+                            @SuppressLint("Range") long sizeOfInputStram = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                            if (sizeOfInputStram > 0 || true) {
+                                fileList.add(new Media(uri, cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)), sizeOfInputStram, 0, true));
                                 selected_item_counter_up();
                                 num_files_added++;
                             }
@@ -1264,7 +1268,7 @@ public class FileSelection extends Fragment {
                             }
                         }
                         catch (Exception e){
-
+                            Log.e("Error", e.getMessage());
                         }
                     }
 
@@ -1278,10 +1282,12 @@ public class FileSelection extends Fragment {
                 } else {
                     try {
                         Uri uri = data.getData();
-                        InputStream is = getContext().getContentResolver().openInputStream(uri);
-                        long sizeOfInputStram = is.available();
-                        if (sizeOfInputStram > 0) {
-                            fileList.add(new Media(uri, getFileName(uri), sizeOfInputStram, 0, true));
+                        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+                        cursor.moveToFirst();
+                        //InputStream is = getContext().getContentResolver().openInputStream(uri);
+                        @SuppressLint("Range") long sizeOfInputStram = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                        if (sizeOfInputStram > 0 || true) {
+                            fileList.add(new Media(uri, cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)), sizeOfInputStram, 0, true));
                             Toast.makeText(requireActivity(), "1 File selected", Toast.LENGTH_SHORT).show();
                             selected_item_counter_up();
                         }
@@ -1310,27 +1316,27 @@ public class FileSelection extends Fragment {
         }
     }
 
-    public String getFileName(Uri uri) {
-        String result = null;
-        if (uri.getScheme().equals("content")) {
-            Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null);
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
-        }
-        return result;
-    }
+//    public String getFileName(Uri uri) {
+//        String result = null;
+//        if (uri.getScheme().equals("content")) {
+//            Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null);
+//            try {
+//                if (cursor != null && cursor.moveToFirst()) {
+//                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                }
+//            } finally {
+//                cursor.close();
+//            }
+//        }
+//        if (result == null) {
+//            result = uri.getPath();
+//            int cut = result.lastIndexOf('/');
+//            if (cut != -1) {
+//                result = result.substring(cut + 1);
+//            }
+//        }
+//        return result;
+//    }
 
     public static void selected_item_counter_up(){
         refreshTotalSize();

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 import com.sugarsnooper.filetransfer.Client.EnableHotspot_ShowQrCode;
@@ -160,7 +161,7 @@ public class HTTPPOSTServer extends Thread {
                 else if (httpQueryString.startsWith("/getAvatarAndName")) {
                     JSONObject jsonObject = new JSONObject();
                     TinyDB tinyDB = new TinyDB(context);
-                    jsonObject.put("name", tinyDB.getString(Strings.user_name_preference_key));
+                    jsonObject.put("name", tinyDB.getString(Strings.user_name_preference_key, Build.MODEL));
                     jsonObject.put("avatar", tinyDB.getInt(Strings.avatar_preference_key));
                     sendResponse(200, jsonObject.toString(), false, false);
                     }
