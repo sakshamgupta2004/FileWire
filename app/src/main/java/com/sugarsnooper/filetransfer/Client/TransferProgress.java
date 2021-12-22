@@ -159,7 +159,7 @@ public class TransferProgress extends Fragment {
                     public void processFinish(String out) {
                         if (!out.equals("OK")) {
                             try {
-                                Toast.makeText(getContext(), "Some Error has Occured", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "Some Error has Occurred", Toast.LENGTH_LONG).show();
                                 requireActivity().finish();
                             }
                             catch (Exception ignored) {

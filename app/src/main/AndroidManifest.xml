@@ -74,7 +74,7 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:parentActivityName=".Mode_Selection_Activity">
             <intent-filter
-            android:label="Send To PC"><!--intent filter for single file sharing-->
+            android:label="Send To PC">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
@@ -108,7 +108,8 @@
             android:name=".Server.Send_Activity"
             android:hardwareAccelerated="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:parentActivityName=".Mode_Selection_Activity"/>
+            android:parentActivityName=".Mode_Selection_Activity">
+        </activity>
         <activity android:name=".Client.RecieveActivity"
             android:launchMode="singleTop"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
