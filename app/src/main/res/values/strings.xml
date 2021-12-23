@@ -79,4 +79,6 @@
     <string name="could_not_find_pcs">Could not find any PCs. Retry?</string>
     <string name="clear">Clear</string>
     <string name="selected_files">Selected Files</string>
+    <string name="pair_pc">Pair PC</string>
+    <string name="paired_pcs">Paired PCs</string>
 </resources>

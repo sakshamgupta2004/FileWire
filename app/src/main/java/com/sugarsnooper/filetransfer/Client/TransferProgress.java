@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -13,9 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.webkit.MimeTypeMap;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,6 +32,8 @@ import com.aditya.filebrowser.Constants;
 import com.aditya.filebrowser.FileBrowser;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.gson.JsonObject;
+import com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware.PC;
 import com.sugarsnooper.filetransfer.FileTypeLookup;
 import com.sugarsnooper.filetransfer.R;
 import com.sugarsnooper.filetransfer.Server.HTTPPOSTServer;
@@ -41,6 +42,7 @@ import com.sugarsnooper.filetransfer.Server.ServerService;
 import com.sugarsnooper.filetransfer.Server.verify;
 import com.sugarsnooper.filetransfer.Strings;
 
+import com.sugarsnooper.filetransfer.TinyDB;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -77,6 +79,7 @@ public class TransferProgress extends Fragment {
     private RecyclerView listView;
     private DownloaderWithMaxThreadPool downloaderWithMaxThreadPool;
     private static boolean start_Sending = false;
+    private JSONObject connectedAvatarAndName = null;
 
     public static Fragment newInstance(String current_ip, boolean startReceiving, boolean connectedToPC) {
         Bundle bundle = new Bundle();
@@ -135,6 +138,7 @@ public class TransferProgress extends Fragment {
                     public void run() {
                         JSONObject result = getConnectedNameAndAvatar();
                         if (result != null) {
+                            connectedAvatarAndName = result;
                             try {
                                 requireActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -198,6 +202,7 @@ public class TransferProgress extends Fragment {
                     public void run() {
                         JSONObject result = getConnectedNameAndAvatar();
                         if (result != null) {
+                            connectedAvatarAndName = result;
                             try {
                                 requireActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -212,6 +217,22 @@ public class TransferProgress extends Fragment {
                             } catch (Exception ignored) {
                             }
                         }
+                    }
+                }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean pcIsNotInList = true;
+                        String productId = getProductId();
+                        TinyDB td = new TinyDB(getContext());
+                        ArrayList<PC> pcList = td.getListObject(Strings.pairedPC_preference_key, PC.class);
+                        for (PC pc : pcList) {
+                            if (pc.getProductId().equals(productId)) {
+                                pcIsNotInList = false;
+                                break;
+                            }
+                        }
+                        setHasOptionsMenu(getArguments().getBoolean("PC_Connection", false) && pcIsNotInList);
                     }
                 }).start();
             }
@@ -317,6 +338,8 @@ public class TransferProgress extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.view = view;
+
+
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -664,5 +687,96 @@ public class TransferProgress extends Fragment {
             e.printStackTrace();
         }
         return stringArrayList;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.pc_transfer_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getTitle().toString().equals(getResources().getString(R.string.pair_pc)))
+        {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Pair PC")
+                    .setMessage("Tap proceed to pair a PC and send any file to the PC easily even if Filewire is not opened on the PC")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            getPCProductIdAndPair();
+                        }
+                    })
+                    .show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void getPCProductIdAndPair() {
+        new Thread(() -> {
+            String productId = getProductId();
+            if (productId != null) {
+                try {
+                    TinyDB td = new TinyDB(getContext());
+                    ArrayList<PC> pcList = td.getListObject(Strings.pairedPC_preference_key, PC.class);
+                    pcList.add(new PC(connectedAvatarAndName.getString("name"), "", productId));
+                    td.putListObject(Strings.pairedPC_preference_key, pcList);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setHasOptionsMenu(false);
+                            Toast.makeText(getContext(), "Pairing Successful", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                catch (Exception e) {
+                    Log.e("Error", e.toString());
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Some Error has Occurred", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+            else {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "Some Error has Occurred", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private String getProductId() {
+        String link = ipAddress + "/getid";
+        link = link.replaceAll(" ", "%20");
+        try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet();
+            request.setURI(new URI(link));
+            HttpResponse response = client.execute(request);
+            BufferedReader in = new BufferedReader(new
+                    InputStreamReader(response.getEntity().getContent()));
+
+            StringBuffer sb = new StringBuffer("");
+            String line="";
+
+            while ((line = in.readLine()) != null) {
+                sb.append(line);
+                break;
+            }
+            in.close();
+            String result = sb.toString();
+            result = result.substring(result.indexOf("<body>") + 6, result.indexOf("</body>"));
+            return result;
+        }
+        catch (Exception ignored){
+            return null;
+        }
     }
 }

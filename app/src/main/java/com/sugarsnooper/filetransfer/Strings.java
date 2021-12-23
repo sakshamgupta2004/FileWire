@@ -22,5 +22,6 @@ public class Strings {
     public static String dateString = "";
     public static final String user_name_preference_key = "User_Name";
     public static final String avatar_preference_key = "User_Avatar";
+    public static final String pairedPC_preference_key = "PairedPCs";
     public static final String PCDefaultPort = "1234";
 }

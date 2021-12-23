@@ -19,10 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,14 +34,10 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.sugarsnooper.filetransfer.*;
 import com.sugarsnooper.filetransfer.Client.TransferProgress;
-import com.sugarsnooper.filetransfer.HashMapWithListener;
-import com.sugarsnooper.filetransfer.NetworkManagement;
-import com.sugarsnooper.filetransfer.QRCodeFormatter;
-import com.sugarsnooper.filetransfer.R;
 import com.sugarsnooper.filetransfer.Server.ServerService;
 import com.sugarsnooper.filetransfer.Server.ServerStatus;
-import com.sugarsnooper.filetransfer.Strings;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -65,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import static android.view.View.GONE;
 import static com.sugarsnooper.filetransfer.Application.avatars;
@@ -80,11 +74,20 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
     private HashMapWithListener<String, String> NearbyPCList;
     private static String connection_string = null;
     private static boolean startSending = false;
+    private final PCFinder finder = new PCFinder();
+    private ArrayList<PC> pairedPCList;
 
     public PcConnectionStatusFragment(String pc_connection_string, boolean start_sending) {
         connection_string = pc_connection_string;
         startSending = start_sending;
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        finder.stop_UDP_Server();
+    }
+
 
     @Nullable
     @Override
@@ -95,7 +98,9 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        root = view;
+        root = getActivity().getWindow().getDecorView().getRootView();
+
+
         view.findViewById(R.id.scan_qr_code_pc_connection_software_button).setOnClickListener(v -> {
                     IntentIntegrator.forSupportFragment(PcConnectionStatusFragment.this).setBeepEnabled(false).setOrientationLocked(false).setBarcodeImageEnabled(false).setPrompt("Scan QR code on PC to connect").initiateScan();
                 }
@@ -195,6 +200,55 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
                 }
             });
         }
+
+        createPairPCList(view);
+    }
+
+    private void createPairPCList(View view) {
+
+        ListView listView = view.findViewById(R.id.pair_pc_list_view);
+        TinyDB td = new TinyDB(getContext());
+        pairedPCList = td.getListObject(Strings.pairedPC_preference_key, PC.class);
+        for (PC pc: pairedPCList) {
+            pc.setActive(false);
+        }
+        finder.runUdpServer(new PCFinder.result() {
+            @Override
+            public void foundPC(String name, String address, String productId) {
+                Log.e("PC Found", name + ";" + address + ";" + productId);
+
+                for (PC pc : pairedPCList) {
+                    if (pc.getProductId().equals(productId)) {
+//                        finder.stop_UDP_Server();
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+//                                tryToConnectToPc(address + "\n")
+                                pc.setActive(true);
+                                pc.setPCAddress(address);
+                                ((PairPCListAdapter) listView.getAdapter()).notifyDataSetChanged();
+                            }
+                        });
+                        break;
+                    }
+                }
+            }
+        }, true);
+        if (pairedPCList.size() == 0)
+            view.findViewById(R.id.paired_pc_heading).setVisibility(GONE);
+        listView.setAdapter(new PairPCListAdapter(getActivity(), pairedPCList));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (pairedPCList.get(i).isActive()) {
+                    tryToConnectToPc(pairedPCList.get(i).getPCAddress() + "\n");
+                }
+                else {
+                    Toast.makeText(getContext(), "Selected PC is offline", Toast.LENGTH_LONG).show();
+                }
+
+            }
+        });
     }
 
     private void startSearching(Dialog dialog) {
@@ -454,6 +508,10 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
                                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                                     @Override
                                                     public void run() {
+                                                        if (snackbar != null) {
+                                                            if (snackbar.isShown())
+                                                                snackbar.dismiss();
+                                                        }
                                                         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, TransferProgress.newInstance(PC_ConnectActivity.hostToConnectTo.substring(0, PC_ConnectActivity.hostToConnectTo.lastIndexOf("/")), false, true, startSending)).setCustomAnimations(R.anim.right_to_left_out, R.anim.right_to_left_in).commit();
                                                         progressDialog.dismiss();
                                                     }

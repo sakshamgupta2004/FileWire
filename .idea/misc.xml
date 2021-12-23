@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/paired_pc_listitem.xml" value="0.1328125" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/menu/pc_transfer_menu.xml" value="0.25052083333333336" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
