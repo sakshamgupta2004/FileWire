@@ -81,4 +81,11 @@
     <string name="selected_files">Selected Files</string>
     <string name="pair_pc">Pair PC</string>
     <string name="paired_pcs">Paired PCs</string>
+    <string name="please_provide_permission_to_access_all_the_files_on_the_device_to_search_for_something">Please
+        provide permission to access all the files on the device to search for something
+    </string>
+    <string name="allow">Allow</string>
+    <string name="files_are_being_refreshed_nplease_wait_it_may_take_some_time">Files are being refreshed\nPlease Wait.
+        It may take some time
+    </string>
 </resources>

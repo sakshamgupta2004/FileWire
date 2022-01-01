@@ -1,13 +1,18 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,9 +23,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sugarsnooper.filetransfer.R;
+import com.sugarsnooper.filetransfer.Server.File.Selection.RefreshingFilesAfterStoragePermissionChangeFragment;
+import com.sugarsnooper.filetransfer.Server.Send_Activity;
 import com.sugarsnooper.filetransfer.Strings;
+import com.sugarsnooper.filetransfer.readableRootsSurvivor;
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
 
 import java.io.File;
 import java.util.List;
@@ -36,6 +47,7 @@ public class FilesandFolder_Others_MainPage extends Fragment {
     private static Drawable internal;
     private static Drawable external;
     private static FirstPageFragmentListener pageFragmentListener;
+    private View rootView;
 
     public FilesandFolder_Others_MainPage() {
     }
@@ -53,10 +65,36 @@ public class FilesandFolder_Others_MainPage extends Fragment {
         external = getResources().getDrawable(R.drawable.ic_memory_card);
         return root;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                recyclerView.setVisibility(View.GONE);
+                FrameLayout bv = rootView.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.VISIBLE);
+                ExtendedFloatingActionButton openStorageSettings = rootView.findViewById(R.id.manage_all_files_button);
+                openStorageSettings.setOnClickListener((o) -> {
+                    startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+                });
 
+            }
+            else {
+                recyclerView.setVisibility(View.VISIBLE);
+                FrameLayout bv = rootView.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.GONE);
+                if (!readableRootsSurvivor.isIsReadAsStorageManager()) {
+                    Fragment frag = getActivity().getSupportFragmentManager().findFragmentByTag ("FILE_SELECTION_FRAGMENT");
+                    getActivity().getSupportFragmentManager().beginTransaction().hide(frag).add(R.id.fragment_container, new RefreshingFilesAfterStoragePermissionChangeFragment(frag)).commit();
+                }
+            }
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        rootView = view;
+
         recyclerView = view.findViewById(R.id.recycler_view_files_and_folders);
         volumes = new CopyOnWriteArrayList<>();
 
@@ -145,7 +183,7 @@ public class FilesandFolder_Others_MainPage extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
             if (getItemViewType(position) == Storage.TYPE_TYPE) {
                 ( (TypesVH) holder).getImageView().setImageDrawable(volumes.get(position).icon);
                 ( (TypesVH) holder).getTextView().setText(volumes.get(position).FileType);

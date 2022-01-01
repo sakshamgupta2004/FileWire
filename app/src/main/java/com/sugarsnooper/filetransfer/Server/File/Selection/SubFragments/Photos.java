@@ -88,11 +88,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static android.view.View.GONE;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.blurView;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.galleryList;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.imageList;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.increase_counter_by;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.videoList;
+import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.*;
 import static com.sugarsnooper.filetransfer.VideoPlayerDismissable.setOrientation;
 import static com.sugarsnooper.filetransfer.readableRootsSurvivor.db;
 
@@ -242,9 +238,13 @@ public class Photos extends Fragment implements ListChangeListener {
                     }
                     orderByValue(parentFolders, NameFileComparator.NAME_COMPARATOR);
                     List<File> parentFoldersList = new ArrayList<>(parentFolders.keySet());
+                    List<String> parentFoldersPathList = new ArrayList<>();
+                    for (File parent: parentFoldersList){
+                        parentFoldersPathList.add(parent.getPath());
+                    }
                     List<String> parentStringFoldersList = new ArrayList<>(parentFolders.values());
                     db.putListObject(fragment.getClass().getName() + "_ListCache", mediaList);
-                    db.putListObject(fragment.getClass().getName() + "_FoldersFileListCache", parentFoldersList);
+                    db.putListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", parentFoldersPathList);
                     db.putListObject(fragment.getClass().getName() + "_FoldersStringListCache", parentStringFoldersList);
                     createList(view, mediaList);
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -274,7 +274,7 @@ public class Photos extends Fragment implements ListChangeListener {
                 }
                 else {
                     List<Media> mediaList = new CopyOnWriteArrayList<>(new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_ListCache", Media.class));
-                    List<File> parentFoldersList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersFileListCache", File.class);
+                    List<String> parentFoldersPathList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", String.class);
                     List<String> parentStringFoldersList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersStringListCache", String.class);
                     if (fragment instanceof Photos) {
                         imageList = mediaList;
@@ -282,6 +282,11 @@ public class Photos extends Fragment implements ListChangeListener {
                         videoList = mediaList;
                     } else if (fragment instanceof Gallery) {
                         galleryList = mediaList;
+                    }
+
+                    List<File> parentFoldersList = new ArrayList<>();
+                    for (String parent : parentFoldersPathList) {
+                        parentFoldersList.add(new File(parent));
                     }
                     parentFolders = new LinkedHashMap<>();
                     if (parentFoldersList.size() == parentStringFoldersList.size()) {
@@ -360,8 +365,12 @@ public class Photos extends Fragment implements ListChangeListener {
         orderByValue(parentFolders1, NameFileComparator.NAME_COMPARATOR);
         List<File> parentFoldersList1 = new ArrayList<>(parentFolders1.keySet());
         List<String> parentStringFoldersList1 = new ArrayList<>(parentFolders1.values());
+        List<String> parentFoldersPathList1 = new ArrayList<>();
+        for (File parent : parentFoldersList1) {
+            parentFoldersPathList1.add(parent.getPath());
+        }
         db.putListObject(fragment.getClass().getName() + "_ListCache", mediaList1);
-        db.putListObject(fragment.getClass().getName() + "_FoldersFileListCache", parentFoldersList1);
+        db.putListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", parentFoldersPathList1);
         db.putListObject(fragment.getClass().getName() + "_FoldersStringListCache", parentStringFoldersList1);
 
 
@@ -1474,6 +1483,16 @@ public class Photos extends Fragment implements ListChangeListener {
         canvas.drawBitmap(bm, new Matrix(), p);
 
         return bm;
+    }
+
+    public void onRefreshList() {
+        if (fragment instanceof Photos) {
+            getAndRefreshList(imageList, root);
+        } else if (fragment instanceof VideoGalleryFragment) {
+            getAndRefreshList(videoList, root);
+        } else if (fragment instanceof Gallery) {
+            getAndRefreshList(galleryList, root);
+        }
     }
 
     @Override

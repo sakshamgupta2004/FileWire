@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/fragment_container.xml" value="0.13489583333333333" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/fragment_files_and_folder.xml" value="0.16927083333333334" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/paired_pc_listitem.xml" value="0.1328125" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/pc_connection_status_ftp_fragment.xml" value="0.12864583333333332" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/refreshing_lists_after_permission_fragment.xml" value="0.12760416666666666" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/menu/pc_transfer_menu.xml" value="0.25052083333333336" />
       </map>
     </option>

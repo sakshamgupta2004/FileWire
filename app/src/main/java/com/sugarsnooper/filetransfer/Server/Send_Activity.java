@@ -8,10 +8,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -31,6 +29,7 @@ import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.Document
 import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.FileExplorer;
 import com.sugarsnooper.filetransfer.Strings;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -49,7 +48,6 @@ public class Send_Activity extends CustomisedAdActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_container);
-
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
             startFragment();
         }

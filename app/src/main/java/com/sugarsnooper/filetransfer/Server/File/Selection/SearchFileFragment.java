@@ -1,7 +1,9 @@
 package com.sugarsnooper.filetransfer.Server.File.Selection;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,9 +11,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -38,10 +39,14 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
 import com.sugarsnooper.filetransfer.FileTypeLookup;
 import com.sugarsnooper.filetransfer.R;
+import com.sugarsnooper.filetransfer.readableRootsSurvivor;
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,6 +70,7 @@ public class SearchFileFragment extends Fragment {
     private RecyclerView searchResults;
     private searchResultsAdapter resultsAdapter;
 
+    private View rootView;
     private List<Media> searchResultsMedia = new CopyOnWriteArrayList<Media>();
 
     public static void backPressed(CustomisedAdActivity activity) {
@@ -92,8 +98,40 @@ public class SearchFileFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                BlurView bv = rootView.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.VISIBLE);
+                bv.setupWith((ViewGroup) getActivity().getWindow().getDecorView().getRootView())
+                        .setBlurAutoUpdate(true)
+                        .setBlurRadius(15f)
+                        .setHasFixedTransformationMatrix(false)
+                        .setBlurAlgorithm(new RenderScriptBlur(getContext()))
+                        .setBlurEnabled(true);
+                ExtendedFloatingActionButton openStorageSettings = rootView.findViewById(R.id.manage_all_files_button);
+                openStorageSettings.setOnClickListener((o) -> {
+                    startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+                });
+
+            }
+            else {
+                BlurView bv = rootView.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.GONE);
+                bv.setBlurEnabled(false);
+                if (!readableRootsSurvivor.isIsReadAsStorageManager()) {
+                    Fragment frag = this;
+                    getActivity().getSupportFragmentManager().beginTransaction().hide(frag).add(R.id.fragment_container, new RefreshingFilesAfterStoragePermissionChangeFragment(frag)).commit();
+                }
+            }
+        }
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        rootView = view;
         view.findViewById(R.id.cancel_search_box).setVisibility(View.GONE);
         resultsAdapter = new searchResultsAdapter();
         searchBox = view.findViewById(R.id.search_box_input);
@@ -215,7 +253,7 @@ public class SearchFileFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(searchResultsViewItem holder, int position) {
+        public void onBindViewHolder(searchResultsViewItem holder, @SuppressLint("RecyclerView") int position) {
             holder.name.setText(searchResultsMedia.get(position).getName());
             holder.state.setText(getFormatSize(searchResultsMedia.get(position).getSize()));
             FloatingActionButton selectedImage = holder.imageView;

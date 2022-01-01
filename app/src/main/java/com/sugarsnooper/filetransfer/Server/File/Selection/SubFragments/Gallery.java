@@ -88,11 +88,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static android.view.View.GONE;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.blurView;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.galleryList;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.imageList;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.increase_counter_by;
-import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.videoList;
+import static com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection.*;
 import static com.sugarsnooper.filetransfer.VideoPlayerDismissable.setOrientation;
 import static com.sugarsnooper.filetransfer.readableRootsSurvivor.db;
 
@@ -242,9 +238,13 @@ public class Gallery extends Fragment implements ListChangeListener {
                     }
                     orderByValue(parentFolders, NameFileComparator.NAME_COMPARATOR);
                     List<File> parentFoldersList = new ArrayList<>(parentFolders.keySet());
+                    List<String> parentFoldersPathList = new ArrayList<>();
+                    for (File parent: parentFoldersList){
+                        parentFoldersPathList.add(parent.getPath());
+                    }
                     List<String> parentStringFoldersList = new ArrayList<>(parentFolders.values());
                     db.putListObject(fragment.getClass().getName() + "_ListCache", mediaList);
-                    db.putListObject(fragment.getClass().getName() + "_FoldersFileListCache", parentFoldersList);
+                    db.putListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", parentFoldersPathList);
                     db.putListObject(fragment.getClass().getName() + "_FoldersStringListCache", parentStringFoldersList);
                     createList(view, mediaList);
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -274,7 +274,7 @@ public class Gallery extends Fragment implements ListChangeListener {
                 }
                 else {
                     List<Media> mediaList = new CopyOnWriteArrayList<>(new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_ListCache", Media.class));
-                    List<File> parentFoldersList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersFileListCache", File.class);
+                    List<String> parentFoldersPathList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", String.class);
                     List<String> parentStringFoldersList = new TinyDB(getContext()).getListObject(fragment.getClass().getName() + "_FoldersStringListCache", String.class);
                     if (fragment instanceof Photos) {
                         imageList = mediaList;
@@ -282,6 +282,11 @@ public class Gallery extends Fragment implements ListChangeListener {
                         videoList = mediaList;
                     } else if (fragment instanceof Gallery) {
                         galleryList = mediaList;
+                    }
+
+                    List<File> parentFoldersList = new ArrayList<>();
+                    for (String parent : parentFoldersPathList) {
+                        parentFoldersList.add(new File(parent));
                     }
                     parentFolders = new LinkedHashMap<>();
                     if (parentFoldersList.size() == parentStringFoldersList.size()) {
@@ -360,8 +365,12 @@ public class Gallery extends Fragment implements ListChangeListener {
         orderByValue(parentFolders1, NameFileComparator.NAME_COMPARATOR);
         List<File> parentFoldersList1 = new ArrayList<>(parentFolders1.keySet());
         List<String> parentStringFoldersList1 = new ArrayList<>(parentFolders1.values());
+        List<String> parentFoldersPathList1 = new ArrayList<>();
+        for (File parent : parentFoldersList1) {
+            parentFoldersPathList1.add(parent.getPath());
+        }
         db.putListObject(fragment.getClass().getName() + "_ListCache", mediaList1);
-        db.putListObject(fragment.getClass().getName() + "_FoldersFileListCache", parentFoldersList1);
+        db.putListObject(fragment.getClass().getName() + "_FoldersFilePathListCache", parentFoldersPathList1);
         db.putListObject(fragment.getClass().getName() + "_FoldersStringListCache", parentStringFoldersList1);
 
 
@@ -1106,13 +1115,13 @@ public class Gallery extends Fragment implements ListChangeListener {
                                     autoCheckDateSelectCheckBox();
                                 }
                             } else {
-                                    String text = dateFormat.format(new Date(itemsToShow.get(position - 1).getModified()));
-                                    if (!text.equals(lastTopDateString))
-                                    {
-                                        dateViewAtTop.setText(text);
-                                        lastTopDateString = text;
-                                        autoCheckDateSelectCheckBox();
-                                    }
+                                String text = dateFormat.format(new Date(itemsToShow.get(position - 1).getModified()));
+                                if (!text.equals(lastTopDateString))
+                                {
+                                    dateViewAtTop.setText(text);
+                                    lastTopDateString = text;
+                                    autoCheckDateSelectCheckBox();
+                                }
                             }
                         }
                         catch (Exception e){
@@ -1192,35 +1201,35 @@ public class Gallery extends Fragment implements ListChangeListener {
 
     private void autoCheckSelectAllBox() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-                boolean areAllChecked = true;
-                boolean checked = true;
-                for (Media media : itemsToShow){
-                    if (!media.isSeperator()) {
-                        if (!media.isChecked()) {
-                            areAllChecked = false;
-                            if (dateFormat.format(new Date(media.getModified())).equals(lastTopDateString)) {
-                                checked = false;
-                            }
-                        }
+        boolean areAllChecked = true;
+        boolean checked = true;
+        for (Media media : itemsToShow){
+            if (!media.isSeperator()) {
+                if (!media.isChecked()) {
+                    areAllChecked = false;
+                    if (dateFormat.format(new Date(media.getModified())).equals(lastTopDateString)) {
+                        checked = false;
                     }
                 }
-                boolean finalAreAllChecked = areAllChecked;
-                boolean finalChecked = checked;
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
+            }
+        }
+        boolean finalAreAllChecked = areAllChecked;
+        boolean finalChecked = checked;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
 
-                        dateCheckAtTop.setChecked(finalChecked);
-                        if (finalAreAllChecked && !selectAllCheckBox.isChecked()) {
-                            isManuallyChecked = true;
-                            selectAllCheckBox.setChecked(finalAreAllChecked);
-                        }
-                        else if (!finalAreAllChecked && selectAllCheckBox.isChecked()) {
-                            isManuallyChecked = true;
-                            selectAllCheckBox.setChecked(finalAreAllChecked);
-                        }
-                    }
-                });
+                dateCheckAtTop.setChecked(finalChecked);
+                if (finalAreAllChecked && !selectAllCheckBox.isChecked()) {
+                    isManuallyChecked = true;
+                    selectAllCheckBox.setChecked(finalAreAllChecked);
+                }
+                else if (!finalAreAllChecked && selectAllCheckBox.isChecked()) {
+                    isManuallyChecked = true;
+                    selectAllCheckBox.setChecked(finalAreAllChecked);
+                }
+            }
+        });
 
     }
 
@@ -1476,6 +1485,16 @@ public class Gallery extends Fragment implements ListChangeListener {
         return bm;
     }
 
+    public void onRefreshList() {
+        if (fragment instanceof Photos) {
+            getAndRefreshList(imageList, root);
+        } else if (fragment instanceof VideoGalleryFragment) {
+            getAndRefreshList(videoList, root);
+        } else if (fragment instanceof Gallery) {
+            getAndRefreshList(galleryList, root);
+        }
+    }
+
     @Override
     public void onChange() {
         try {
@@ -1602,16 +1621,16 @@ public class Gallery extends Fragment implements ListChangeListener {
                     holder.itemView.getViewTreeObserver().removeOnScrollChangedListener(dateStickListeners.get(holder));
                     //dateStickListeners.remove(holder);
                     if (!itemsToShow.get(position).isChecked()) {
-                   // holder1.ivparent.setBackgroundColor(Color.parseColor("#00777777"));
+                        // holder1.ivparent.setBackgroundColor(Color.parseColor("#00777777"));
 //                    holder.imageView.setPadding(0, 0, 0, 0);
-                 //       ((CardView) holder1.itemView).setForeground(uncover_image);
+                        //       ((CardView) holder1.itemView).setForeground(uncover_image);
                         ((FrameLayout)((CardView) holder1.itemView).findViewById(R.id.image_cover_grid)).setForeground(uncover_image);
                         holder1.itemChecked.setChecked(false);
                     } else {
-                    //holder1.ivparent.setBackgroundColor(requireActivity().getResources().getColor(R.color.media_selected_border));
+                        //holder1.ivparent.setBackgroundColor(requireActivity().getResources().getColor(R.color.media_selected_border));
 
 //                    holder.imageView.setPadding(max_padding, max_padding, max_padding, max_padding);
-                 //       ((CardView) holder1.itemView).setForeground(cover_image);
+                        //       ((CardView) holder1.itemView).setForeground(cover_image);
 
                         ((FrameLayout)((CardView) holder1.itemView).findViewById(R.id.image_cover_grid)).setForeground(cover_image);
                         holder1.itemChecked.setChecked(true);

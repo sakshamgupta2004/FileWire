@@ -14,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class readableRootsSurvivor extends Service implements Runnable {
+    private static boolean isReadAsStorageManager = false;
     private static Map<String, Long> imagesMap = null;
     private static Map<String, Long> videosMap = null;
     private static Map<String, Long> galleryMap = null;
@@ -57,6 +59,10 @@ public class readableRootsSurvivor extends Service implements Runnable {
     public static TinyDB db;
 
 
+    public static boolean isIsReadAsStorageManager()
+    {
+        return isReadAsStorageManager;
+    }
     public static List<String> getAppPackageList() {
         while (appList == null) {
             try {
@@ -95,6 +101,12 @@ public class readableRootsSurvivor extends Service implements Runnable {
     }
 
     public static void refreshLists() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            isReadAsStorageManager = Environment.isExternalStorageManager();
+        }
+        else {
+            isReadAsStorageManager = true;
+        }
         ReadableRoots readableRoots = new ReadableRoots(context);
         imagesMap = new LinkedHashMap<>(readableRoots.getImages());
         videosMap = new LinkedHashMap<>(readableRoots.getVideos());
@@ -287,6 +299,12 @@ public class readableRootsSurvivor extends Service implements Runnable {
             }).start();
 
             if (imagesMap == null || videosMap == null || galleryMap == null || docsList == null || archivesList == null || audioList == null || installerList == null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    isReadAsStorageManager = Environment.isExternalStorageManager();
+                }
+                else {
+                    isReadAsStorageManager = true;
+                }
                 ReadableRoots readableRoots = new ReadableRoots(getBaseContext());
                 imagesMap = new LinkedHashMap<>(readableRoots.getImages());
                 videosMap = new LinkedHashMap<>(readableRoots.getVideos());

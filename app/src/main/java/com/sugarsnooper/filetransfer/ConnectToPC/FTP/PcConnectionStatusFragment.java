@@ -7,9 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.wifi.WifiManager;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.os.*;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +30,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.sugarsnooper.filetransfer.NetworkManagement;
 import com.sugarsnooper.filetransfer.R;
 
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
 import org.swiftp.Globals;
 
 import static com.sugarsnooper.filetransfer.Strings.no_hardware;
@@ -50,7 +50,32 @@ public class PcConnectionStatusFragment extends Fragment implements Runnable {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.pc_connection_status_ftp_fragment, container, false);
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                BlurView bv = root.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.VISIBLE);
+                bv.setupWith((ViewGroup) getActivity().getWindow().getDecorView().getRootView())
+                        .setBlurAutoUpdate(true)
+                        .setBlurRadius(15f)
+                        .setHasFixedTransformationMatrix(false)
+                        .setBlurAlgorithm(new RenderScriptBlur(getContext()))
+                        .setBlurEnabled(true);
+                ExtendedFloatingActionButton openStorageSettings = root.findViewById(R.id.manage_all_files_button);
+                openStorageSettings.setOnClickListener((o) -> {
+                    startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+                });
 
+            }
+            else {
+                BlurView bv = root.findViewById(R.id.blurviewbackground);
+                bv.setVisibility(View.GONE);
+                bv.setBlurEnabled(false);
+            }
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -18,16 +18,16 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
-<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"-->
-<!--        tools:ignore="ScopedStorage" />-->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
     <uses-feature android:name="android.hardware.wifi" />
-<!--    <queries>-->
-<!--        <intent>-->
-<!--            <action android:name="android.intent.action.MAIN" />-->
-<!--        </intent>-->
-<!--    </queries>-->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
     <application
 
 
@@ -44,10 +44,12 @@
         android:requestLegacyExternalStorage="true">
 
         <activity
+                android:exported="false"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:name=".VideoPlayerDismissable"/>
 
         <activity
+                android:exported="false"
             android:screenOrientation="portrait"
             android:name="com.aditya.filebrowser.FileBrowser"
             android:theme="@style/ForceDarkFileBrowserTheme"
@@ -55,6 +57,7 @@
             />
 
         <activity
+                android:exported="false"
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
             tools:replace="screenOrientation"
@@ -62,6 +65,7 @@
             />
 
         <activity
+                android:exported="false"
             android:name=".ConnectToPC.FTP.PC_Connect_Activity"
             android:screenOrientation="portrait"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
@@ -69,6 +73,7 @@
         </activity>
 
         <activity
+                android:exported="true"
             android:name=".ConnectToPC.PCSoftware.PC_ConnectActivity"
             android:screenOrientation="portrait"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
@@ -88,11 +93,13 @@
         </activity>
 
         <activity
+                android:exported="false"
             android:name=".Mode_Selection_Activity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             >
         </activity>
         <activity
+                android:exported="true"
             android:screenOrientation="portrait"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:name=".splash_screen">
@@ -101,16 +108,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".History.HistoryActivity"
+        <activity
+                android:exported="false"
+                android:name=".History.HistoryActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:parentActivityName=".Mode_Selection_Activity"/>
         <activity
+                android:exported="false"
             android:name=".Server.Send_Activity"
             android:hardwareAccelerated="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:parentActivityName=".Mode_Selection_Activity">
         </activity>
-        <activity android:name=".Client.RecieveActivity"
+        <activity
+                android:exported="false"
+                android:name=".Client.RecieveActivity"
             android:launchMode="singleTop"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:parentActivityName=".Mode_Selection_Activity"/>
