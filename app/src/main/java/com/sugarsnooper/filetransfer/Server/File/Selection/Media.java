@@ -29,6 +29,7 @@ public class Media implements Serializable {
     private boolean hasToShow = true;
     private String duration = null;
     private String fullPath = null;
+    private String parentPath = null;
 
     public Media (){
         isSeperator = true;
@@ -160,6 +161,7 @@ public class Media implements Serializable {
         this.hastoanimate = false;
         this.Modified = modified;
         this.parentFile = parent;
+        this.parentPath = parent.getPath();
         this.FILETYPE = FILETYPE;
         modifiedString = simpleDateFormat.format(new Date(modified));
     }
@@ -238,5 +240,9 @@ public class Media implements Serializable {
 
     public boolean isFolder() {
         return isFolder;
+    }
+
+    public String getParentPath() {
+        return parentPath;
     }
 }

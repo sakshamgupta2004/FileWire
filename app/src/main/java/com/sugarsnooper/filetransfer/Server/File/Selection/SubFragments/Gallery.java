@@ -528,7 +528,7 @@ public class Gallery extends Fragment implements ListChangeListener {
 
                 for (Media media : mediaList) {
                     if (!media.isSeperator()) {
-                        if (media.getParentFile().getPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
+                        if (media.getParentPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
                             itemsToShow.add(media);
                         }
                     } else {
@@ -537,7 +537,7 @@ public class Gallery extends Fragment implements ListChangeListener {
                             int pics_under_seperator = 1;
                             while (true) {
                                 if (!mediaList.get(i + pics_under_seperator).isSeperator()) {
-                                    if (mediaList.get(i + pics_under_seperator).getParentFile().getPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
+                                    if (mediaList.get(i + pics_under_seperator).getParentPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
                                         hasItemsUnderIt = true;
                                         break;
                                     }
@@ -644,7 +644,7 @@ public class Gallery extends Fragment implements ListChangeListener {
 
                                     for (Media media : mediaList){
                                         if (!media.isSeperator()){
-                                            if (media.getParentFile().getPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())){
+                                            if (media.getParentPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())){
                                                 itemsToShow.add(media);
                                             }
                                         }
@@ -654,7 +654,7 @@ public class Gallery extends Fragment implements ListChangeListener {
                                                 int pics_under_seperator = 1;
                                                 while (true) {
                                                     if (!mediaList.get(i + pics_under_seperator).isSeperator()) {
-                                                        if (mediaList.get(i + pics_under_seperator).getParentFile().getPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
+                                                        if (mediaList.get(i + pics_under_seperator).getParentPath().equals(((Map.Entry<File, String>) parentFolders.entrySet().toArray()[which - 1]).getKey().getPath())) {
                                                             hasItemsUnderIt = true;
                                                             break;
                                                         }
