@@ -88,4 +88,7 @@
     <string name="files_are_being_refreshed_nplease_wait_it_may_take_some_time">Files are being refreshed\nPlease Wait.
         It may take some time
     </string>
+    <string name="please_provide_permission_to_access_all_the_files_on_the_device_to_use_this_feature">Please provide
+        permission to Access All The Files on the device to use this feature.
+    </string>
 </resources>

@@ -9,7 +9,7 @@ android {
         applicationId "com.sugarsnooper.filetransfer"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 51
+        versionCode 52
         versionName "0.2"
     }
     buildTypes {

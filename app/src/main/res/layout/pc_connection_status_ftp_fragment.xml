@@ -23,7 +23,7 @@
                       android:textAlignment="gravity"
                       android:layout_gravity="center_vertical|center_horizontal"
                       android:gravity="center_horizontal|center_vertical"
-                      android:text="@string/please_provide_permission_to_access_all_the_files_on_the_device_to_search_for_something"/>
+                      android:text="@string/please_provide_permission_to_access_all_the_files_on_the_device_to_use_this_feature"/>
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
