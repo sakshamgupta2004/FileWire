@@ -3,11 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.14791666666666667" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/drawable/ic_baseline_close_24.xml" value="0.14791666666666667" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/first_page_activity.xml" value="0.13177083333333334" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/fragment_container.xml" value="0.13489583333333333" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/fragment_files_and_folder.xml" value="0.16927083333333334" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/name_avtar_entry_view.xml" value="0.13177083333333334" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/paired_pc_listitem.xml" value="0.1328125" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/pc_connection_status_ftp_fragment.xml" value="0.12864583333333332" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/refreshing_lists_after_permission_fragment.xml" value="0.12760416666666666" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/search_nearby_pcs_dialog.xml" value="0.16822916666666668" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/selected_files_recycler_item.xml" value="0.16822916666666668" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/send_files_dialog.xml" value="0.16822916666666668" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/splash_screen.xml" value="0.196875" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/transfer_to_pc_dialog_settings.xml" value="0.16822916666666668" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/layout/view_selected_files_dialog.xml" value="0.13177083333333334" />
+        <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/menu/mode_selection_activity_options.xml" value="0.14635416666666667" />
         <entry key="..\:/Users/Saksham/IdeaProjects/FileWire/app/src/main/res/menu/pc_transfer_menu.xml" value="0.25052083333333336" />
       </map>
     </option>

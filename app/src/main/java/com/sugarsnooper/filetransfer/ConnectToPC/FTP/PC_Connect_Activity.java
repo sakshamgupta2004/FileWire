@@ -3,6 +3,8 @@ package com.sugarsnooper.filetransfer.ConnectToPC.FTP;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.appbar.AppBarLayout;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
 import com.sugarsnooper.filetransfer.R;
+import com.sugarsnooper.filetransfer.Strings;
+import com.sugarsnooper.filetransfer.TinyDB;
 
 import static com.sugarsnooper.filetransfer.ConnectToPC.FTP.PcConnectionStatusFragment.serverStarted;
 
@@ -34,7 +38,9 @@ public class PC_Connect_Activity extends CustomisedAdActivity {
         setActionBar(toolbar);
         setTitle("FTP Server");
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Drawable d = getResources().getDrawable(R.drawable.ic_baseline_arrow_back_24);
+        d.setColorFilter(new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key) ? getResources().getColor(R.color.textcolor) : getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP );
+        getActionBar().setHomeAsUpIndicator(d);
         fragment = new PcConnectionStatusFragment();
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment).commit();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

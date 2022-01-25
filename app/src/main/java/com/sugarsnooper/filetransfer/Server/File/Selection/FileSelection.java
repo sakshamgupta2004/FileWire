@@ -74,11 +74,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+import com.sugarsnooper.filetransfer.*;
 import com.sugarsnooper.filetransfer.ConnectToPC.FTP.PC_Connect_Activity;
 import com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware.PC_ConnectActivity;
-import com.sugarsnooper.filetransfer.FileTypeLookup;
-import com.sugarsnooper.filetransfer.QRCodeFormatter;
-import com.sugarsnooper.filetransfer.R;
 import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.AppSelectionFragment;
 import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.Gallery;
 import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.Photos;
@@ -86,7 +84,6 @@ import com.sugarsnooper.filetransfer.Server.File.Selection.SubFragments.VideoGal
 import com.sugarsnooper.filetransfer.Server.InitializeServerFragment;
 import com.sugarsnooper.filetransfer.Server.Send_Activity;
 import com.sugarsnooper.filetransfer.Server.ServerService;
-import com.sugarsnooper.filetransfer.Strings;
 import com.thanosfisherman.wifiutils.WifiUtils;
 
 import java.io.BufferedReader;
@@ -695,7 +692,10 @@ public class FileSelection extends Fragment {
     private void onViewCounterSelectedClick() {
         refreshTotalSize();
         if (selected_counter != 0) {
-            Dialog dialog = new Dialog(getActivity(), R.style.PauseDialog);
+            int dialogStyle = R.style.PauseDialog;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && new TinyDB(getContext()).getBoolean(Strings.useA12Theme_preference_key))
+                dialogStyle = R.style.PauseDialogDynamic;
+            Dialog dialog = new Dialog(getActivity(), dialogStyle);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.view_selected_files_dialog);
             dialog.setCancelable(true);

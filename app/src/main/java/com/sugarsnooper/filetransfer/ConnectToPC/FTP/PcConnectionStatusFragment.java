@@ -30,6 +30,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.sugarsnooper.filetransfer.NetworkManagement;
 import com.sugarsnooper.filetransfer.R;
 
+import com.sugarsnooper.filetransfer.Strings;
+import com.sugarsnooper.filetransfer.TinyDB;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 import org.swiftp.Globals;
@@ -112,7 +114,10 @@ public class PcConnectionStatusFragment extends Fragment implements Runnable {
 //                        }
 //                    }).start();
 
-                    final Dialog dialog = new Dialog(requireActivity(), R.style.PauseDialog);
+                    int dialogStyle = R.style.PauseDialog;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && new TinyDB(getContext()).getBoolean(Strings.useA12Theme_preference_key))
+                        dialogStyle = R.style.PauseDialogDynamic;
+                    final Dialog dialog = new Dialog(requireActivity(), dialogStyle);
                     dialog.setCancelable(true);
                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));

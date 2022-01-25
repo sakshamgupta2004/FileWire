@@ -55,7 +55,9 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.first_page_activity);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
+            toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
+
         toolbar.setContentInsetsRelative(0,0);
         setActionBar(toolbar);
         getActionBar().setDisplayShowHomeEnabled(true);
@@ -348,6 +350,11 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
             }
             return true;
         }
+        else if (item.getItemId() == R.id.material_you_menu) {
+            new TinyDB(this).putBoolean(Strings.useA12Theme_preference_key, !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key));
+            recreate();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -368,6 +375,11 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.mode_selection_activity_options, menu);
+        menu.findItem(R.id.material_you_menu).setVisible(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S);
+        if (new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
+            menu.findItem(R.id.material_you_menu).setTitle(getResources().getString(R.string.use_material));
+        else
+            menu.findItem(R.id.material_you_menu).setTitle(getResources().getString(R.string.use_material_you));
         return true;
     }
 

@@ -91,4 +91,6 @@
     <string name="please_provide_permission_to_access_all_the_files_on_the_device_to_use_this_feature">Please provide
         permission to Access All The Files on the device to use this feature.
     </string>
+    <string name="use_material_you">Use Material You</string>
+    <string name="use_material">Use Material Theme</string>
 </resources>

@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.*;
 import android.util.Log;
@@ -33,6 +35,7 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.sugarsnooper.filetransfer.TinyDB;
 import eightbitlab.com.blurview.BlurView;
 
 
@@ -62,7 +65,9 @@ public class Send_Activity extends CustomisedAdActivity {
         ActionBar ab = getActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
-            ab.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+            Drawable d = getResources().getDrawable(R.drawable.ic_baseline_arrow_back_24);
+            d.setColorFilter(new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key) ? getResources().getColor(R.color.textcolor) : getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP );
+            ab.setHomeAsUpIndicator(d);
         }
         hostedFiles = new CopyOnWriteArrayList<>();
 

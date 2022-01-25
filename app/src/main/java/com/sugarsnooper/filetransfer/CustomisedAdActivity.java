@@ -2,8 +2,10 @@ package com.sugarsnooper.filetransfer;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,6 +39,10 @@ public class CustomisedAdActivity extends FragmentActivity {
     private String url_getAdImage = "http://www.sugarsnooper.com/file_share/ads.php";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
+                this.setTheme(R.style.DynamicTheme);
+        }
         super.onCreate(savedInstanceState);
 //        Explode explodeAnimation = new Explode();
 //        explodeAnimation.setDuration(750);
@@ -44,22 +50,39 @@ public class CustomisedAdActivity extends FragmentActivity {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         Log.e("Ui Thread Priority", String.valueOf(Thread.currentThread().getPriority()));
-        int nightModeFlags =
-                this.getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
-        switch (nightModeFlags) {
-            case Configuration.UI_MODE_NIGHT_YES:
+
+
+            int nightModeFlags =
+                    this.getResources().getConfiguration().uiMode &
+                            Configuration.UI_MODE_NIGHT_MASK;
+            switch (nightModeFlags) {
+                case Configuration.UI_MODE_NIGHT_YES:
 //                getWindow().getDecorView().getRootView().setBackground(new ColorDrawable(Color.parseColor("#000000")));
-                getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background_dark));
-                break;
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
+                        getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background_dark));
+                    else
+                    {
+                        Drawable d = getDrawable(R.drawable.background_dark);
+                        d.setColorFilter(getColor(R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
+                        getWindow().getDecorView().getRootView().setBackground(d);
+                    }
+                    break;
 
-            case Configuration.UI_MODE_NIGHT_NO:
+                case Configuration.UI_MODE_NIGHT_NO:
 
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                case Configuration.UI_MODE_NIGHT_UNDEFINED:
 //                getWindow().getDecorView().getRootView().setBackground(new ColorDrawable(Color.parseColor("#F8F8F8")));
-                getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background));
-                break;
-        }
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key) || true)
+                        getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background));
+                    else
+                    {
+                        Drawable d = getDrawable(R.drawable.background);
+                        d.setColorFilter(getColor(R.color.colorAccent), PorterDuff.Mode.OVERLAY);
+                        getWindow().getDecorView().getRootView().setBackground(d);
+                    }
+                    break;
+            }
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         new Thread(new Runnable() {
             @Override

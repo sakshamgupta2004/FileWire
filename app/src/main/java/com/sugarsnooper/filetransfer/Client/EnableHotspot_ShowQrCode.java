@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -39,10 +41,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.zxing.WriterException;
-import com.sugarsnooper.filetransfer.NetworkManagement;
-import com.sugarsnooper.filetransfer.QRCodeFormatter;
-import com.sugarsnooper.filetransfer.R;
-import com.sugarsnooper.filetransfer.Strings;
+import com.sugarsnooper.filetransfer.*;
 
 import androidmads.library.qrgenearator.QRGContents;
 import androidmads.library.qrgenearator.QRGEncoder;
@@ -60,7 +59,9 @@ public class EnableHotspot_ShowQrCode extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        requireActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
+        Drawable d = getResources().getDrawable(R.drawable.ic_baseline_close_24);
+        d.setColorFilter(new TinyDB(getContext()).getBoolean(Strings.useA12Theme_preference_key) ? getResources().getColor(R.color.textcolor) : getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP );
+        requireActivity().getActionBar().setHomeAsUpIndicator(d);
         View root = inflater.inflate(R.layout.shoq_qr_code_layout, container, false);
         requireActivity().setTitle("QR Code Authentication");
         ImageView bitmap = root.findViewById(R.id.bitmap);

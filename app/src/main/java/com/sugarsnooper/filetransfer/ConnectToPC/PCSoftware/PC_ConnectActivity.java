@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,9 +21,7 @@ import androidx.fragment.app.Fragment;
 
 
 import com.google.android.material.appbar.AppBarLayout;
-import com.sugarsnooper.filetransfer.CustomisedAdActivity;
-import com.sugarsnooper.filetransfer.QRCodeFormatter;
-import com.sugarsnooper.filetransfer.R;
+import com.sugarsnooper.filetransfer.*;
 import com.sugarsnooper.filetransfer.Server.File.Selection.Media;
 import com.sugarsnooper.filetransfer.Server.Send_Activity;
 import com.sugarsnooper.filetransfer.Server.ServerService;
@@ -53,7 +53,9 @@ public class PC_ConnectActivity extends CustomisedAdActivity {
         setActionBar(toolbar);
         setTitle("Connect to PC");
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24);
+        Drawable d = getResources().getDrawable(R.drawable.ic_baseline_arrow_back_24);
+        d.setColorFilter(new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key) ? getResources().getColor(R.color.textcolor) : getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP );
+        getActionBar().setHomeAsUpIndicator(d);
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

@@ -8,7 +8,9 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,40 +54,65 @@ public class splash_screen extends Activity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && (new TinyDB(getApplicationContext()).getString(Strings.user_name_preference_key,  null) == null)) {
+            new TinyDB(getApplicationContext()).putBoolean(Strings.useA12Theme_preference_key, true);
+            this.setTheme(R.style.DynamicTheme);
+            start();
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            startActivity(new Intent(this, Mode_Selection_Activity.class));
+            finish();
+        }
+        else {
+            start();
+        }
+    }
+
+    private void start() {
         setContentView(R.layout.splash_screen);
 
         isAlive = true;
+        tinyDb = new TinyDB(getApplicationContext());
         int nightModeFlags =
                 this.getResources().getConfiguration().uiMode &
                         Configuration.UI_MODE_NIGHT_MASK;
         switch (nightModeFlags) {
             case Configuration.UI_MODE_NIGHT_YES:
                 ((ImageView) findViewById(R.id.splash_logo)).setImageResource(R.drawable.ic_logo_dark_playstore_without_bg);
-        }
-        tinyDb = new TinyDB(this);
-        nightModeFlags =
-                this.getResources().getConfiguration().uiMode &
-                        Configuration.UI_MODE_NIGHT_MASK;
-        switch (nightModeFlags) {
-            case Configuration.UI_MODE_NIGHT_YES:
-                getWindow().setBackgroundDrawableResource(R.drawable.background_dark);
-
+//                getWindow().getDecorView().getRootView().setBackground(new ColorDrawable(Color.parseColor("#000000")));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
+                    getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background_dark));
+                else
+                {
+                    Drawable d = getDrawable(R.drawable.background_dark);
+                    d.setColorFilter(getColor(R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
+                    getWindow().getDecorView().getRootView().setBackground(d);
+                }
                 break;
 
             case Configuration.UI_MODE_NIGHT_NO:
 
             case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                getWindow().setBackgroundDrawableResource(R.drawable.background);
+//                getWindow().getDecorView().getRootView().setBackground(new ColorDrawable(Color.parseColor("#F8F8F8")));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key) || true)
+                    getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background));
+                else
+                {
+                    Drawable d = getDrawable(R.drawable.background);
+                    d.setColorFilter(getColor(R.color.colorAccent), PorterDuff.Mode.OVERLAY);
+                    getWindow().getDecorView().getRootView().setBackground(d);
+                }
                 break;
         }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (tinyDb.getString(Strings.user_name_preference_key,  null) == null) {
+                if (tinyDb.getString(Strings.user_name_preference_key, null) == null) {
                     showAvatarAndNameDialog();
-                }
-                else {
+                } else {
                     switchToMainActivity();
                 }
             }
@@ -107,7 +134,10 @@ public class splash_screen extends Activity {
 
 
 
-        final Dialog dialog = new Dialog(splash_screen.this, R.style.LoginDialog);
+        int dialogStyle = R.style.LoginDialog;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            dialogStyle = R.style.LoginDialogDynamic;
+        final Dialog dialog = new Dialog(splash_screen.this, dialogStyle);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setContentView(R.layout.name_avtar_entry_view);

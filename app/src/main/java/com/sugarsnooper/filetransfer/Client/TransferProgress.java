@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -108,7 +110,9 @@ public class TransferProgress extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         try {
-            requireActivity().getActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
+            Drawable d = getResources().getDrawable(R.drawable.ic_baseline_close_24);
+            d.setColorFilter(new TinyDB(getContext()).getBoolean(Strings.useA12Theme_preference_key) ? getResources().getColor(R.color.textcolor) : getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP );
+            requireActivity().getActionBar().setHomeAsUpIndicator(d);
         }
         catch (NullPointerException ignored) {
 
