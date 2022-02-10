@@ -1,6 +1,11 @@
 package com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware;
 
+import android.content.Context;
+import android.net.DhcpInfo;
+import android.net.wifi.WifiManager;
+import android.os.StrictMode;
 import com.sugarsnooper.filetransfer.NetworkManagement;
+import com.sugarsnooper.filetransfer.Server.ServerService;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -10,21 +15,33 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.URI;
 
 public class PCFinder
 {
+    private Context context;
+
+    public static void foundPC(String pcName, String address, String productId) {
+        if (Server_aktiv)
+            result_.foundPC(pcName, address, productId);
+    }
+
     interface result {
         public void foundPC (String name, String address, String productId);
     }
 
-    private boolean Server_aktiv = true;
+    private static boolean Server_aktiv = true;
+    private static result result_;
 
-    public PCFinder runUdpServer(result result1, boolean onlyPairingMode)
+    public PCFinder runUdpServer(result result1, boolean onlyPairingMode, Context context)
     {
+        this.context = context;
+        result_ = result1;
         Server_aktiv = true;
         Thread thread = new Thread(() -> {
             byte[] lMsg = new byte[4096];
@@ -83,6 +100,16 @@ public class PCFinder
             }
         });
         thread.start();
+        new Thread(() -> {
+            while (Server_aktiv) {
+                NetworkManagement.sendBroadcast("MobileFileWire\nPort:" + String.valueOf(ServerService.getPort()) + "\n" + NetworkManagement.getAllIpAddress(context), 36000, context);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         return this;
     }
 
@@ -91,7 +118,11 @@ public class PCFinder
         Server_aktiv = false;
         return this;
     }
-    private String canGetNameAndAvatar(String connection) {
+
+
+
+
+    public static String canGetNameAndAvatar(String connection) {
         String link = connection + "getAvatarAndName";
         link = link.replaceAll(" ", "%20");
         try {

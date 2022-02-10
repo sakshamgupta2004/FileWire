@@ -233,7 +233,7 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
                     }
                 }
             }
-        }, true);
+        }, true, getContext());
         if (pairedPCList.size() == 0)
             view.findViewById(R.id.paired_pc_heading).setVisibility(GONE);
         listView.setAdapter(new PairPCListAdapter(getActivity(), pairedPCList));

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.sugarsnooper.filetransfer.Client.EnableHotspot_ShowQrCode;
+import com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware.PCFinder;
 import com.sugarsnooper.filetransfer.Strings;
 import com.sugarsnooper.filetransfer.TinyDB;
 import com.sugarsnooper.filetransfer.ZipUtils;
@@ -164,12 +165,26 @@ public class HTTPPOSTServer extends Thread {
                     jsonObject.put("name", tinyDB.getString(Strings.user_name_preference_key, Build.MODEL));
                     jsonObject.put("avatar", tinyDB.getInt(Strings.avatar_preference_key));
                     sendResponse(200, jsonObject.toString(), false, false);
-                    }
-                  else {
-                        sendResponse(404, "<b>The Requested resource not found ...." +
-                                "Usage: http://" + addressport + ":" + port + "</b>", false, false);
-                    }
                 }
+                else if (httpQueryString.startsWith("/compavailable:")) {
+                    String productId = httpQueryString.substring(15, httpQueryString.indexOf(";"));
+                    httpQueryString = httpQueryString.substring(httpQueryString.indexOf(";") + 1, httpQueryString.length() - 1);
+                    String[] addr = httpQueryString.split(";");
+                    for (String s : addr) {
+                        new Thread(() -> {
+                            String tempName = PCFinder.canGetNameAndAvatar("http://" + s + "/");
+                            if (tempName != null) {
+                                PCFinder.foundPC(tempName, "http://" + s + "/", productId);
+                            }
+                        }).start();
+                    }
+                    sendResponse(200, "", false, false);
+                }
+                else {
+                      sendResponse(404, "<b>The Requested resource not found ...." +
+                              "Usage: http://" + addressport + ":" + port + "</b>", false, false);
+                }
+            }
             else if (httpMethod.equals("POST")) {
                 Log.e("Query", httpQueryString);
             }

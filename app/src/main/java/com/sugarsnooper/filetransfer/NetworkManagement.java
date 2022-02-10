@@ -2,19 +2,17 @@ package com.sugarsnooper.filetransfer;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 
+import android.os.StrictMode;
 import com.sugarsnooper.filetransfer.Server.InitializeServerFragment;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.ServerSocket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.ByteOrder;
 import java.util.Enumeration;
 
@@ -229,6 +227,37 @@ public class NetworkManagement {
 
         return ipAddressString;
 
+    }
+
+
+
+    public static void sendBroadcast(String messageStr, int port, Context context) {
+        // Hack Prevent crash (sending should be done using an async task)
+        StrictMode.ThreadPolicy policy = new   StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        try {
+            //Open a random port to send the package
+            DatagramSocket socket = new DatagramSocket();
+            socket.setBroadcast(true);
+            byte[] sendData = messageStr.getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, getBroadcastAddress(context), port);
+            socket.send(sendPacket);
+        } catch (IOException e) {
+//            Log.e(TAG, "IOException: " + e.getMessage());
+        }
+    }
+
+    private static InetAddress getBroadcastAddress(Context context) throws IOException {
+        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        DhcpInfo dhcp = wifi.getDhcpInfo();
+        // handle null somehow
+
+        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+        byte[] quads = new byte[4];
+        for (int k = 0; k < 4; k++)
+            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+        return InetAddress.getByAddress(quads);
     }
 
 
