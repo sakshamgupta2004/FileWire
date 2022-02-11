@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sugarsnooper.filetransfer.*;
 import com.sugarsnooper.filetransfer.Server.File.Selection.Media;
 import com.sugarsnooper.filetransfer.Server.Send_Activity;
@@ -136,7 +137,7 @@ public class PC_ConnectActivity extends CustomisedAdActivity {
     }
 
     private void createDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
                 .setTitle("Exit")
                 .setMessage("Are you sure, you want to exit?")

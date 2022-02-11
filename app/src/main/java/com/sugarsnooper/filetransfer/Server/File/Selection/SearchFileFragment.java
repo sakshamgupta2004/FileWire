@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.*;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,10 +43,7 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.sugarsnooper.filetransfer.CustomisedAdActivity;
-import com.sugarsnooper.filetransfer.FileTypeLookup;
-import com.sugarsnooper.filetransfer.R;
-import com.sugarsnooper.filetransfer.readableRootsSurvivor;
+import com.sugarsnooper.filetransfer.*;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
@@ -128,10 +127,15 @@ public class SearchFileFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         rootView = view;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && new TinyDB(getContext()).getBoolean(Strings.useA12Theme_preference_key)) {
+            Color c = Color.valueOf(getResources().getColor(R.color.colorAccent));
+            ((CardView) view.findViewById(R.id.search_card)).setCardBackgroundColor(Color.valueOf(c.red(), c.green(), c.blue(), 0.1f).toArgb());
+        }
         view.findViewById(R.id.cancel_search_box).setVisibility(View.GONE);
         resultsAdapter = new searchResultsAdapter();
         searchBox = view.findViewById(R.id.search_box_input);

@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
 import com.sugarsnooper.filetransfer.Mode_Selection_Activity;
 import com.sugarsnooper.filetransfer.R;
@@ -119,7 +120,7 @@ public class RecieveActivity extends CustomisedAdActivity {
     }
 
     private void createDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
                 .setTitle("Exit")
                 .setMessage("Are you sure, you want to exit?")

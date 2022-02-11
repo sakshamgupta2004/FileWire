@@ -39,6 +39,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.zxing.WriterException;
 import com.sugarsnooper.filetransfer.*;
@@ -68,7 +69,7 @@ public class EnableHotspot_ShowQrCode extends Fragment {
         ExtendedFloatingActionButton switch_5ghz = root.findViewById(R.id.switch_to_5ghz_hotspot);
         if (!((WifiManager)getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE)).is5GHzBandSupported())
             switch_5ghz.setVisibility(View.GONE);
-        switch_5ghz.setOnClickListener(v -> new AlertDialog.Builder(getActivity())
+        switch_5ghz.setOnClickListener(v -> new MaterialAlertDialogBuilder(getActivity())
                 .setTitle("Important")
                 .setMessage("You will need to manually Enable WiFi-Hotspot in 5GHz mode and then, on the sending device, you will need to enter the hotspot password manually or you may try scanning the QR Code in the hotspot settings menu.\n\nNote:- The sender also needs to support 5GHz band, otherwise, the app will fail to connect")
                 .setPositiveButton("Network Settings", new DialogInterface.OnClickListener() {
@@ -122,7 +123,7 @@ public class EnableHotspot_ShowQrCode extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             if (!Settings.System.canWrite(context)) {
-                new AlertDialog.Builder(activity).setTitle("Provide Permission")
+                new MaterialAlertDialogBuilder(activity).setTitle("Provide Permission")
                         .setMessage("Please provide permission to Turn on WiFi Hotspot")
                         .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                             @Override

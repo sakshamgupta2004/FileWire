@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.stfalcon.imageviewer.StfalconImageViewer;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
 import com.sugarsnooper.filetransfer.R;
@@ -148,7 +149,7 @@ public class Send_Activity extends CustomisedAdActivity {
     }
 
     private void createDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setCancelable(false)
                 .setTitle("Exit")
                 .setMessage("Are you sure, you want to exit?")

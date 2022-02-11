@@ -1,11 +1,14 @@
 package com.sugarsnooper.filetransfer.Server;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 import com.sugarsnooper.filetransfer.Client.EnableHotspot_ShowQrCode;
@@ -207,77 +210,91 @@ public class HTTPPOSTServer extends Thread {
         else
             statusLine = "HTTP/1.1 404 Not Found" + "\r\n";
         if (isUri) {
-            Uri uri = Uri.parse(responseString);
-            if (!responseString.contains("file:///")) {
-                if (context.checkUriPermission(
-                        uri,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        android.os.Process.myPid(),
-                        android.os.Process.myUid(),
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    InputStream in = context.getContentResolver().openInputStream(uri);
-                    if (in != null) {
-                        Log.e("URI", "Has permission and writing to output");
-                        contentLengthLine = "Content-Length: -1\r\n";
-                        outToClient.writeBytes(statusLine);
-                        outToClient.writeBytes(serverdetails);
-                        outToClient.writeBytes(contentTypeLine);
-               //         outToClient.writeBytes(contentLengthLine);
-                        outToClient.writeBytes("\r\n");
-                        shareFile(in, outToClient);
+            try {
+                Uri uri = Uri.parse(responseString);
+                Log.e("HttpServer", "Uri: " + responseString);
+                if (!responseString.contains("file:///")) {
+                    if (context.checkUriPermission(
+                            uri,
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            android.os.Process.myPid(),
+                            android.os.Process.myUid(),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        InputStream in = context.getContentResolver().openInputStream(uri);
+                        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+                        cursor.moveToFirst();
+                        @SuppressLint("Range") long sizeOfInputStram = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                        @SuppressLint("Range") String filename = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        if (in != null) {
+                            Log.e("URI", "Has permission and writing to output");
+                            contentLengthLine = "Content-Length: -1\r\n";
+                            outToClient.writeBytes(statusLine);
+                            outToClient.writeBytes(serverdetails);
+                            outToClient.writeBytes(contentTypeLine);
+                            //         outToClient.writeBytes(contentLengthLine);
+                            outToClient.writeBytes("\r\n");
+                            shareFile(in, outToClient, filename, sizeOfInputStram, listener);
+                            outToClient.close();
+                        } else {
+                            Log.e("HttpServer", "Error opening uri");
+                        }
+                    } else {
+                        Log.e("HttpServer", "Error opening uri. Permission error");
+
+                        responseString = HTTPPOSTServer.HTML_START + "<b>Internal Server Error ...." +
+                                "Usage: http://" + addressport + ":" + port + "</b>" + HTTPPOSTServer.HTML_END;
+                        contentLengthLine = "Content-Length: " + responseString.length() + "\r\n";
+                        PrintWriter pout = new PrintWriter(outToClient);
+                        pout.print("HTTP/1.1 404 Not Found" + "\r\n");
+                        pout.print(serverdetails);
+                        pout.print(contentTypeLine);
+                        //      pout.print(contentLengthLine);
+                        pout.print("\r\n");
+                        pout.print(responseString + "\r\n");
+                        pout.close();
                         outToClient.close();
                     }
                 } else {
-                    responseString = HTTPPOSTServer.HTML_START + "<b>Internal Server Error ...." +
-                            "Usage: http://" + addressport + ":" + port + "</b>" + HTTPPOSTServer.HTML_END;
-                    contentLengthLine = "Content-Length: " + responseString.length() + "\r\n";
-                    PrintWriter pout = new PrintWriter(outToClient);
-                    pout.print("HTTP/1.1 404 Not Found" + "\r\n");
-                    pout.print(serverdetails);
-                    pout.print(contentTypeLine);
-              //      pout.print(contentLengthLine);
-                    pout.print("\r\n");
-                    pout.print(responseString + "\r\n");
-                    pout.close();
-                    outToClient.close();
-                }
-            } else {
-                File file = new File(uri.getPath());
-                String filename = fileNameUriTable.get(responseString);
-                if (filename == null) {
-                    Log.e("ResponseString", responseString);
-                    for (Map.Entry<String, String> entry : fileNameUriTable.entrySet()) {
-                        Log.e("TableItem" ,"Uri: " + entry.getKey() +             "Name: " + entry.getValue());
+                    File file = new File(uri.getPath());
+                    String filename = fileNameUriTable.get(responseString);
+                    if (filename == null) {
+                        Log.e("ResponseString", responseString);
+                        for (Map.Entry<String, String> entry : fileNameUriTable.entrySet()) {
+                            Log.e("TableItem", "Uri: " + entry.getKey() + "Name: " + entry.getValue());
+                        }
+                        filename = file.getName();
                     }
-                    filename = file.getName();
-                }
-                if (!file.isDirectory()) {
-                    fin = new FileInputStream(file);
+                    if (!file.isDirectory()) {
+                        fin = new FileInputStream(file);
 
-                    contentLengthLine = "Content-Length: " + Integer.toString(fin.available()) + "\r\n";
-                    outToClient.writeBytes(statusLine);
-                    outToClient.writeBytes(serverdetails);
-                    outToClient.writeBytes(contentTypeLine);
-            //        outToClient.writeBytes(contentLengthLine);
-                    outToClient.writeBytes("\r\n");
-                    sendFile(fin, outToClient, filename, file.length());
-                    outToClient.close();
-                }
-                else {
-                    contentLengthLine = "Content-Length: -1" + "\r\n";
-                    outToClient.writeBytes(statusLine);
-                    outToClient.writeBytes(serverdetails);
-                    outToClient.writeBytes(contentTypeLine);
-           //         outToClient.writeBytes(contentLengthLine);
-                    outToClient.writeBytes("Content-Disposition: attachment; filename=\"out.zip\"\r\n");
-                    outToClient.writeBytes("\r\n");
-                    new ZipUtils(file).zipIt(outToClient, filename, listener);
-                    outToClient.close();
+                        contentLengthLine = "Content-Length: " + Integer.toString(fin.available()) + "\r\n";
+                        outToClient.writeBytes(statusLine);
+                        outToClient.writeBytes(serverdetails);
+                        outToClient.writeBytes(contentTypeLine);
+                        //        outToClient.writeBytes(contentLengthLine);
+                        outToClient.writeBytes("\r\n");
+                        sendFile(fin, outToClient, filename, file.length());
+                        outToClient.close();
+                    } else {
+                        contentLengthLine = "Content-Length: -1" + "\r\n";
+                        outToClient.writeBytes(statusLine);
+                        outToClient.writeBytes(serverdetails);
+                        outToClient.writeBytes(contentTypeLine);
+                        //         outToClient.writeBytes(contentLengthLine);
+                        outToClient.writeBytes("Content-Disposition: attachment; filename=\"out.zip\"\r\n");
+                        outToClient.writeBytes("\r\n");
+                        new ZipUtils(file).zipIt(outToClient, filename, listener);
+                        outToClient.close();
+                    }
                 }
             }
-        } else if (isFile) {
+            catch (Exception ec) {
+                Log.e("HttpServer Error", ec.toString());
+            }
+        }
+        else if (isFile) {
             fileName = responseString;
             fin = new FileInputStream(fileName);
             contentLengthLine = "Content-Length: " + Integer.toString(fin.available()) + "\r\n";
@@ -290,7 +307,8 @@ public class HTTPPOSTServer extends Thread {
             outToClient.writeBytes("\r\n");
             sendFile(fin, outToClient);
             outToClient.close();
-        } else {
+        }
+        else {
             responseString = HTTPPOSTServer.HTML_START + responseString + HTTPPOSTServer.HTML_END;
             contentLengthLine = "Content-Length: " + responseString.length() + "\r\n";
             PrintWriter pout = new PrintWriter(outToClient);
@@ -340,12 +358,15 @@ public class HTTPPOSTServer extends Thread {
         fin.close();
     }
 
-    private void shareFile(InputStream fin, DataOutputStream out)
+    private void shareFile(InputStream fin, DataOutputStream out, String filename, long sizeOfInputStram, ServerListener listener)
             throws Exception {
         byte[] buffer = new byte[409600];
         int bytesRead;
+        long written = 0;
         while ((bytesRead = fin.read(buffer)) != -1) {
             out.write(buffer, 0, bytesRead);
+            written += bytesRead;
+            listener.progressChange(filename, written, sizeOfInputStram);
         }
         fin.close();
     }

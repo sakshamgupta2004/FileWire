@@ -68,6 +68,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -94,12 +95,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import eightbitlab.com.blurview.BlurView;
@@ -118,7 +114,7 @@ public class FileSelection extends Fragment {
     public static List<Media> galleryList;
     public static List<Media> fileAndFolderList;
     public static HashMap<String, Integer> fileAndFolderListPositionTableW_R_T_URI;
-    public static HashMap<String, List<String>> selectedFolderMap;
+    public static HashMap<String, Map.Entry<List<String>, Long>> selectedFolderMap;
     public static int gridExtraItems = 6;
     private static ExtendedFloatingActionButton view_counter;
     public static ExtendedFloatingActionButton fab1, fab2, fab3;
@@ -552,7 +548,7 @@ public class FileSelection extends Fragment {
     */
 
 //I just used AlertDialog to show device information
-        AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(getActivity());
         dialog.setCancelable(true);
         dialog.setTitle("Device information:");
         dialog.setMessage(infoBuffer);//StringBuffer which we appended the device informations.
@@ -610,7 +606,7 @@ public class FileSelection extends Fragment {
         if (!getArguments().getBoolean(Strings.FileSelectionRequest)) {
             if (!((WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE)).isWifiEnabled()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    new AlertDialog.Builder(requireActivity())
+                    new MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Enable WiFi")
                             .setMessage("Please turn on WiFi." +
                                     "\n" +
@@ -1254,6 +1250,7 @@ public class FileSelection extends Fragment {
                     for(int i = 0; i < data.getClipData().getItemCount(); i++) {
                         try {
                             Uri uri = data.getClipData().getItemAt(i).getUri();
+                            getContext().getContentResolver().takePersistableUriPermission (uri, Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                             Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
                             cursor.moveToFirst();
                             //InputStream is = getContext().getContentResolver().openInputStream(uri);
@@ -1282,6 +1279,7 @@ public class FileSelection extends Fragment {
                 } else {
                     try {
                         Uri uri = data.getData();
+                        getContext().getContentResolver().takePersistableUriPermission (uri, Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                         Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
                         cursor.moveToFirst();
                         //InputStream is = getContext().getContentResolver().openInputStream(uri);
@@ -1555,16 +1553,16 @@ public class FileSelection extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.file_selection, menu);
-        if (getArguments().getBoolean(Strings.FileSelectionRequest)) {
-            menu.getItem(1).setVisible(false);
-        }
+//        if (getArguments().getBoolean(Strings.FileSelectionRequest)) {
+//            menu.getItem(1).setVisible(false);
+//        }
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.open_explorer) {
             Intent filesIntent;
-            filesIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            filesIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             filesIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
             filesIntent.addCategory(Intent.CATEGORY_OPENABLE);
             filesIntent.setType("*/*");  //use image/* for photos, etc.

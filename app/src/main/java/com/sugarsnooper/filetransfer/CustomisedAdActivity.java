@@ -2,6 +2,7 @@ package com.sugarsnooper.filetransfer;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.bumptech.glide.Glide;
@@ -58,8 +60,11 @@ public class CustomisedAdActivity extends FragmentActivity {
             switch (nightModeFlags) {
                 case Configuration.UI_MODE_NIGHT_YES:
 //                getWindow().getDecorView().getRootView().setBackground(new ColorDrawable(Color.parseColor("#000000")));
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key))
-                        getWindow().getDecorView().getRootView().setBackground(getDrawable(R.drawable.background_dark));
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !new TinyDB(this).getBoolean(Strings.useA12Theme_preference_key)) {
+                        Drawable d = getDrawable(R.drawable.background_dark);
+                        d.clearColorFilter();
+                        getWindow().getDecorView().getRootView().setBackground(d);
+                    }
                     else
                     {
                         Drawable d = getDrawable(R.drawable.background_dark);

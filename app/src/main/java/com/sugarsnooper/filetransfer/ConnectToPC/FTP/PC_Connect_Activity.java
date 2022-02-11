@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
 import com.sugarsnooper.filetransfer.R;
 import com.sugarsnooper.filetransfer.Strings;
@@ -69,7 +70,7 @@ public class PC_Connect_Activity extends CustomisedAdActivity {
     @Override
     public void onBackPressed() {
         if (serverStarted) {
-            new AlertDialog.Builder(this).setCancelable(false).setTitle("Exit").setMessage("Are you sure, you want to exit.\nThis will terminate any ongoing file Transfers")
+            new MaterialAlertDialogBuilder(this).setCancelable(false).setTitle("Exit").setMessage("Are you sure, you want to exit.\nThis will terminate any ongoing file Transfers")
                     .setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

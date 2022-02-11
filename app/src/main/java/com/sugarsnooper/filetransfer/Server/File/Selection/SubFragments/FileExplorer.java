@@ -56,10 +56,7 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
@@ -158,8 +155,24 @@ public class FileExplorer extends Fragment implements ListChangeListener {
                                         if (state) {
                                             long[] size = {0L};
                                             List<String> fileList = new ArrayList<String>();
-                                            FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileList);
                                             generateFileList(file, file, fileList, size);
+                                            Map.Entry<List<String>, Long> fileslist = new Map.Entry<List<String>, Long>() {
+                                                @Override
+                                                public List<String> getKey() {
+                                                    return fileList;
+                                                }
+
+                                                @Override
+                                                public Long getValue() {
+                                                    return size[0];
+                                                }
+
+                                                @Override
+                                                public Long setValue(Long aLong) {
+                                                    return null;
+                                                }
+                                            };
+                                            FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileslist);
                                             fileAndFolderList.add(new Media(Uri.fromFile(file), file.getName(), size[0], file.lastModified(), true, true));
                                             fileAndFolderListPositionTableW_R_T_URI.put(file.getAbsolutePath(), fileAndFolderList.size() - 1);
                                             num_items_changed ++;
@@ -429,8 +442,25 @@ public class FileExplorer extends Fragment implements ListChangeListener {
                             public void run() {
                                 long[] size = {0L};
                                 List<String> fileList = new ArrayList<String>();
-                                FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileList);
                                 generateFileList(file, file, fileList, size);
+
+                                Map.Entry<List<String>, Long> fileslist = new Map.Entry<List<String>, Long>() {
+                                    @Override
+                                    public List<String> getKey() {
+                                        return fileList;
+                                    }
+
+                                    @Override
+                                    public Long getValue() {
+                                        return size[0];
+                                    }
+
+                                    @Override
+                                    public Long setValue(Long aLong) {
+                                        return null;
+                                    }
+                                };
+                                FileSelection.selectedFolderMap.put(Uri.fromFile(file).toString(), fileslist);
                                 long foldersize = size[0];
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override

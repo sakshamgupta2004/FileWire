@@ -35,7 +35,8 @@ public class ZipUtils {
 
     public void zipIt(OutputStream fos, String filename, HTTPPOSTServer.ServerListener listener) {
 //        generateFileList(SOURCE_FOLDER);
-        fileList = FileSelection.selectedFolderMap.get(Uri.fromFile(SOURCE_FOLDER).toString());
+        fileList = FileSelection.selectedFolderMap.get(Uri.fromFile(SOURCE_FOLDER).toString()).getKey();
+        totalZipSize = FileSelection.selectedFolderMap.get(Uri.fromFile(SOURCE_FOLDER).toString()).getValue();
         byte[] buffer = new byte[409600];
         String source = SOURCE_FOLDER.getName();
         ZipOutputStream zos = null;

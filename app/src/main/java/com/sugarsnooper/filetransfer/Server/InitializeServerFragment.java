@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.sugarsnooper.filetransfer.Client.TransferProgress;
 import com.sugarsnooper.filetransfer.QRCodeFormatter;
@@ -97,7 +98,7 @@ public class InitializeServerFragment extends Fragment {
                                         @Override
                                         public void run() {
 
-                                            new AlertDialog.Builder(requireActivity())
+                                            new MaterialAlertDialogBuilder(requireActivity())
                                                     .setTitle("Enable WiFi")
                                                     .setMessage("Please turn on WiFi." +
                                                             "\n" +
@@ -353,7 +354,7 @@ public class InitializeServerFragment extends Fragment {
 //                                                    try {
 //                                                        requireActivity().setTitle(getString(R.string.success));
 //                                                        initStatus.setText(R.string.complete);
-//                                                        new AlertDialog.Builder(requireActivity())
+//                                                        new MaterialAlertDialogBuilder(requireActivity())
 //                                                                .setCancelable(false)
 //                                                                .setTitle("Transfer Complete")
 //                                                                .setMessage("Selected Files have been transferred")
@@ -392,7 +393,7 @@ public class InitializeServerFragment extends Fragment {
                             @Override
                             public void run() {
                                 requireActivity().stopService(new Intent(requireActivity(), ServerService.class));
-                                new AlertDialog.Builder(requireActivity()).setTitle("Failed").setMessage("Some error has occurred while initializing\nPlease try again").setCancelable(false).setNeutralButton("Go Back", new DialogInterface.OnClickListener() {
+                                new MaterialAlertDialogBuilder(requireActivity()).setTitle("Failed").setMessage("Some error has occurred while initializing\nPlease try again").setCancelable(false).setNeutralButton("Go Back", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         ((Send_Activity) requireActivity()).onNavigateUp();

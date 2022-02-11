@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aditya.filebrowser.Constants;
 import com.aditya.filebrowser.FileBrowser;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.JsonObject;
 import com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware.PC;
@@ -381,7 +382,7 @@ public class TransferProgress extends Fragment {
 
     private void down_complete_dialog(){
         if (shouldShowEndDialog) {
-            new AlertDialog.Builder(requireActivity())
+            new MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("Transfer Complete")
                     .setMessage("All files have been successfully transferred to your device")
                     .setCancelable(false)
@@ -471,7 +472,7 @@ public class TransferProgress extends Fragment {
 //                            Log.e("DownloadError", out);
             new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + FileTypeLookup.fileTypeString(fileAndProgress.get(batch).get(filePositionOffset[0]).getFileName(), fileAndProgress.get(batch).get(filePositionOffset[0]).isFolder()) + "/" + fileAndProgress.get(batch).get(filePositionOffset[0]).getFileName()).delete();
           try {
-              new AlertDialog.Builder(requireActivity()).setMessage("Some unexpected error has Occurred")
+              new MaterialAlertDialogBuilder(requireActivity()).setMessage("Some unexpected error has Occurred")
                       .setTitle("Transfer Failed")
                       .setCancelable(false)
                       .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -702,7 +703,7 @@ public class TransferProgress extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getTitle().toString().equals(getResources().getString(R.string.pair_pc)))
         {
-            new AlertDialog.Builder(getActivity())
+            new MaterialAlertDialogBuilder(getActivity())
                     .setTitle("Pair PC")
                     .setMessage("Tap proceed to pair a PC and send any file to the PC easily even if Filewire is not opened on the PC")
                     .setNegativeButton("Cancel", null)
