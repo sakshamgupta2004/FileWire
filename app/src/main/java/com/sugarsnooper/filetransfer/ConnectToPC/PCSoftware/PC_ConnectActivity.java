@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.Toolbar;
 
@@ -83,7 +84,8 @@ public class PC_ConnectActivity extends CustomisedAdActivity {
                         fileList.add(new Media(uri, cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)), sizeOfInputStram, 0, true));
 
                     }
-                } else {
+                }
+                else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
                     ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
                     if (uris != null) {
                         for (Uri uri : uris) {

@@ -990,8 +990,12 @@ public class FileSelection extends Fragment {
             dialog.setCanceledOnTouchOutside(true);
             dialog.findViewById(R.id.send_dialog_card).setTranslationY(200f);
             dialog.findViewById(R.id.scan_qr_code_button_dialog).setTranslationY(400f);
-            dialog.findViewById(R.id.enter_credentials_button_dialog).setTranslationY(600f);
+            dialog.findViewById(R.id.send_to_pc_button_dialog).setTranslationY(600f);
+            dialog.findViewById(R.id.enter_credentials_button_dialog).setTranslationY(800f);
             dialog.findViewById(R.id.send_dialog_bg).setOnClickListener(v -> dialog.dismiss());
+            dialog.findViewById(R.id.send_to_pc_button_dialog).setOnClickListener(v -> {
+                start_initialize("http://0.0.0.0:1234/\n", true, false);
+            });
             dialog.findViewById(R.id.scan_qr_code_button_dialog).setOnClickListener(v -> {
                 dialog.dismiss();
                 IntentIntegrator.forSupportFragment(FileSelection.this).setOrientationLocked(false).setBarcodeImageEnabled(false).setPrompt("Scan QR code on receiving device to connect").initiateScan();
@@ -1124,7 +1128,7 @@ public class FileSelection extends Fragment {
                                                                         String ssid = et.getText().toString();
                                                                         String pass = et1.getText().toString();
                                                                         dialog.dismiss();
-                                                                        start_initialize( QRCodeFormatter.formatSSIDAndPass(ssid, pass), false);
+                                                                        start_initialize( QRCodeFormatter.formatSSIDAndPass(ssid, pass), false, false);
 
                                                                     }
                                                                     public void hideKeyboard(Activity activity) {
@@ -1181,6 +1185,7 @@ public class FileSelection extends Fragment {
             dialog.setOnShowListener(d -> dialog.findViewById(R.id.send_dialog_bg).animate().alpha(1F).withEndAction(() -> {
                 dialog.findViewById(R.id.send_dialog_card).animate().setInterpolator(new DecelerateInterpolator()).translationY(0f).start();
                 dialog.findViewById(R.id.scan_qr_code_button_dialog).animate().setInterpolator(new DecelerateInterpolator()).translationY(0f).start();
+                dialog.findViewById(R.id.send_to_pc_button_dialog).animate().setInterpolator(new DecelerateInterpolator()).translationY(0f).start();
                 dialog.findViewById(R.id.enter_credentials_button_dialog).animate().setInterpolator(new DecelerateInterpolator()).translationY(0f).start();
             }).start());
             dialog.show();
@@ -1213,7 +1218,7 @@ public class FileSelection extends Fragment {
             }
         }
         else {
-            start_initialize(null, true);
+            start_initialize(null, false, true);
         }
     }
 
@@ -1305,7 +1310,7 @@ public class FileSelection extends Fragment {
                 if (result.getContents() == null) {
                     Toast.makeText(requireContext(), "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
-                    start_initialize(result.getContents(), false);
+                    start_initialize(result.getContents(), false, false);
 
                 }
             } else {
@@ -1408,7 +1413,7 @@ public class FileSelection extends Fragment {
         }
     }
 
-    private void start_initialize(String result1, boolean isFileSelectionMode) {
+    private void start_initialize(String result1, boolean openPCSelection, boolean isFileSelectionMode) {
         Send_Activity.hostedFiles = new CopyOnWriteArrayList<>();
         try {
             if (imageList != null)
@@ -1535,9 +1540,11 @@ public class FileSelection extends Fragment {
         catch (QRCodeFormatter.QRCodeFormatException e) {
             try {
                 QRCodeFormatter.continueIfItIsPcFormat(result1);
-                Toast.makeText(requireContext(), "PC Code Detected", Toast.LENGTH_LONG).show();
+                if (!openPCSelection)
+                    Toast.makeText(requireContext(), "PC Code Detected", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getContext(), PC_ConnectActivity.class);
-                i.putExtra("pc_connection_string", result1);
+                if (!openPCSelection)
+                    i.putExtra("pc_connection_string", result1);
                 i.putExtra("start_sending", Send_Activity.hostedFiles.size() > 0);
                 ServerService.changeHostedFiles(Send_Activity.hostedFiles);
                 getActivity().startActivity(i);

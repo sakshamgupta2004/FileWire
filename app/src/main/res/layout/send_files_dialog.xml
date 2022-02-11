@@ -56,6 +56,18 @@
             android:layout_marginTop="10dp"
             android:textColor="@color/white"
             app:backgroundTint="@color/colorAccent" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/send_to_pc_button_dialog"
+                android:gravity="center"
+                android:text="@string/send_to_pc"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textColor="?android:textColorSecondary"
+                app:backgroundTint="?android:colorBackground" />
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/enter_credentials_button_dialog"
             android:gravity="center"
