@@ -63,7 +63,7 @@ public class NetworkManagement {
                 }
             }
             else {
-                ip += no_hardware;
+//                ip += no_hardware;
             }
             networkInterface = NetworkInterface.getByName("eth0");
             if (networkInterface != null) {
@@ -122,7 +122,7 @@ public class NetworkManagement {
                 }
             }
             else {
-                ip += no_hardware;
+//                ip += no_hardware;
             }
         } catch (SocketException e) {
             e.printStackTrace();

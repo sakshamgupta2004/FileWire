@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.sugarsnooper.filetransfer"
         minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 55
-        versionName "0.2"
+        targetSdkVersion 33
+        versionCode 56
+        versionName "0.3"
     }
     buildTypes {
         release {
