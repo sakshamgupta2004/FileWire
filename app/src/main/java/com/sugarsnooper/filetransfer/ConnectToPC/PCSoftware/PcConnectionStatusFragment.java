@@ -29,6 +29,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.util.EGLSurfaceTexture;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -62,6 +63,7 @@ import java.util.logging.Logger;
 
 import static android.view.View.GONE;
 import static com.sugarsnooper.filetransfer.Application.avatars;
+import static com.sugarsnooper.filetransfer.Strings.PCDefaultPort;
 import static com.sugarsnooper.filetransfer.Strings.no_hardware;
 import static com.sugarsnooper.filetransfer.Strings.something_wrong;
 
@@ -76,6 +78,7 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
     private static boolean startSending = false;
     private final PCFinder finder = new PCFinder();
     private ArrayList<PC> pairedPCList;
+    private ArrayList<PC> nearbyBgPC;
 
     public PcConnectionStatusFragment(String pc_connection_string, boolean start_sending) {
         connection_string = pc_connection_string;
@@ -99,8 +102,7 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         root = getActivity().getWindow().getDecorView().getRootView();
-
-
+        nearbyBgPC = new ArrayList<>();
         view.findViewById(R.id.scan_qr_code_pc_connection_software_button).setOnClickListener(v -> {
                     IntentIntegrator.forSupportFragment(PcConnectionStatusFragment.this).setBeepEnabled(false).setOrientationLocked(false).setBarcodeImageEnabled(false).setPrompt("Scan QR code on PC to connect").initiateScan();
                 }
@@ -209,6 +211,7 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
         ListView listView = view.findViewById(R.id.pair_pc_list_view);
         TinyDB td = new TinyDB(getContext());
         pairedPCList = td.getListObject(Strings.pairedPC_preference_key, PC.class);
+        nearbyBgPC = new ArrayList<>();
         for (PC pc: pairedPCList) {
             pc.setActive(false);
         }
@@ -216,8 +219,48 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
             @Override
             public void foundPC(String name, String address, String productId) {
                 Log.e("PC Found", name + ";" + address + ";" + productId);
+                boolean containsNearbyPC = false;
+                for (PC pc1 : nearbyBgPC) {
+                    if (productId.equals(pc1.getProductId())) {
+                        containsNearbyPC = true;
+                    }
+                }
+                if (!containsNearbyPC) {
+                    nearbyBgPC.add(new PC(name, address.substring(0, address.indexOf(":", address.indexOf(":") + 1)), productId));
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                                try {
+                                    String addr = address.substring(0, address.indexOf(":", address.indexOf(":") + 1));
+                                    for (int callPort = Integer.parseInt(PCDefaultPort); callPort <= Integer.parseInt(PCDefaultPort) + 25; callPort++) {
+                                        String callToAddress = addr + ":" + String.valueOf(callPort);
+                                        String name = canGetNameAndAvatar(callToAddress);
+
+                                        if (name != null) {
+                                            if (!pc_search_cancelled)
+                                                try {
+                                                    Log.e("PCIp", callToAddress);
+                                                    NearbyPCList.put(callToAddress, name);
+                                                } catch (Exception e) {
+                                                    Log.e("ERR", e.toString());
+                                                }
+                                        }
+                                    }
+                                }
+                                catch (Exception exception){
+
+                                }
+                        }
+                    }).start();
+                }
+
+
+
 
                 for (PC pc : pairedPCList) {
+
                     if (pc.getProductId().equals(productId)) {
 //                        finder.stop_UDP_Server();
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -276,8 +319,8 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
             public void run() {
                 ArrayList<Integer> usedSpots = new ArrayList<>();
                 pc_search_cancelled = false;
-                startPCScan();
-                boolean scan_complete = false;
+
+                NearbyPCList = new HashMapWithListener<>();
                 NearbyPCList.setPutListener(new HashMapWithListener.putListener() {
                     @Override
                     public void onPut(Object key, Object value) {
@@ -333,6 +376,9 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
                         });
                     }
                 });
+
+                startPCScan();
+                boolean scan_complete = false;
                 while (!scan_complete) {
                     int numCompleted = 0;
                     for (Thread t : PCSearchThreadList) {
@@ -371,7 +417,6 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
 
     private void startPCScan() {
         PCSearchThreadList = new CopyOnWriteArrayList<>();
-        NearbyPCList = new HashMapWithListener<>();
         String add = NetworkManagement.getAllIpAddress(getContext());
 //                            add += "192.168.42.129\n";
         boolean connected;
@@ -386,6 +431,37 @@ public class PcConnectionStatusFragment extends androidx.fragment.app.Fragment {
         }
         if (connected) {
             try {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        for (PC pc : nearbyBgPC) {
+                            try {
+                                String address = pc.getPCAddress();
+                                for (int callPort = Integer.parseInt(PCDefaultPort); callPort <= Integer.parseInt(PCDefaultPort) + 25; callPort++) {
+                                    String callToAddress = address + ":" + String.valueOf(callPort);
+                                    String name = canGetNameAndAvatar(callToAddress);
+
+                                    if (name != null) {
+                                        if (!pc_search_cancelled)
+                                            try {
+                                                Log.e("PCIp", callToAddress);
+                                                NearbyPCList.put(callToAddress, name);
+                                            } catch (Exception e) {
+                                                Log.e("ERR", e.toString());
+                                            }
+                                    }
+                                }
+                            }
+                            catch (Exception exception){
+
+                            }
+                        }
+                    }
+                }).start();
+
+
+
                 String[] addresses = add.split("\n");
                 addresses = new HashSet<String>(Arrays.asList(addresses)).toArray(new String[0]);
                 for (String address : addresses) {

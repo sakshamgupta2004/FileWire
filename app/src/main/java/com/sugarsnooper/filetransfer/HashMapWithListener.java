@@ -14,7 +14,8 @@ public class HashMapWithListener<K, V> extends HashMap<K, V> {
     @Nullable
     @Override
     public V put(K key, V value) {
-        PutListener.onPut(key, value);
+        if (!this.containsKey(key))
+            PutListener.onPut(key, value);
         return super.put(key, value);
     }
 

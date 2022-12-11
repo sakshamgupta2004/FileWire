@@ -28,7 +28,8 @@ public class PCFinder
 
     public static void foundPC(String pcName, String address, String productId) {
         if (Server_aktiv)
-            result_.foundPC(pcName, address, productId);
+            if (result_ != null)
+                result_.foundPC(pcName, address, productId);
     }
 
     interface result {
