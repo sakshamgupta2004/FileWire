@@ -237,30 +237,34 @@ public class DocumentExplorer extends Fragment implements ListChangeListener {
 //                                        .setPopupStyle(DEFAULT)
 //                                        .build();
 
-                                recyclerViewItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                                    @Override
-                                    public void onScrolled(RecyclerView recyclerView, int dx,int dy){
-                                        super.onScrolled(recyclerView, dx, dy);
+                                try {
+                                    recyclerViewItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                                        @Override
+                                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                            super.onScrolled(recyclerView, dx, dy);
 
-                                        if (dy > 20) {
-                                            FileSelection.scrollDown();
+                                            if (dy > 20) {
+                                                FileSelection.scrollDown();
+                                            } else if (dy < -20) {
+                                                FileSelection.scrollUp();
+                                            }
+
                                         }
-                                        else if (dy < -20) {
-                                            FileSelection.scrollUp();
-                                        }
-
-                                    }
-                                });
+                                    });
 
 
-                                recyclerViewItems.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-                                recyclerViewNavigation.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false));
-                                recyclerViewItems.setLayoutManager(new LinearLayoutManager(requireContext()));
-                                recyclerViewNavigation.setAdapter(new NavigationRecyclerAdapter());
-                                recyclerViewItems.setAdapter(new ItemsRecyclerAdapter());
-                                fastScroller.setRecyclerView(recyclerViewItems);
-                                recyclerViewItems.scheduleLayoutAnimation();
-                                autotickCheckBoxifAllSelected(false);
+                                    recyclerViewItems.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+                                    recyclerViewNavigation.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false));
+                                    recyclerViewItems.setLayoutManager(new LinearLayoutManager(requireContext()));
+                                    recyclerViewNavigation.setAdapter(new NavigationRecyclerAdapter());
+                                    recyclerViewItems.setAdapter(new ItemsRecyclerAdapter());
+                                    fastScroller.setRecyclerView(recyclerViewItems);
+                                    recyclerViewItems.scheduleLayoutAnimation();
+                                    autotickCheckBoxifAllSelected(false);
+                                }
+                                catch (NullPointerException FragExitedHere){
+                                    //FragExit
+                                }
                             }
                         });
             }
