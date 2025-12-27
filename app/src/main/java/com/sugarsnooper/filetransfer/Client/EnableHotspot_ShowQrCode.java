@@ -353,11 +353,7 @@ public class EnableHotspot_ShowQrCode extends Fragment {
                     try {
                         QRGEncoder qrgEncoder = new QRGEncoder(QRCodeFormatter.formatSSIDAndPass(unm, pass), null, QRGContents.Type.TEXT, 128);
                         Bitmap bitmap = null;
-                        try {
-                            bitmap = qrgEncoder.encodeAsBitmap();
-                        } catch (WriterException e) {
-                            e.printStackTrace();
-                        }
+                        bitmap = qrgEncoder.getBitmap();
                         ImageView qrImage = view.findViewById(R.id.bitmap);
                         TextView textView = view.findViewById(R.id.text_credentials);
                         ((ExtendedFloatingActionButton) view.findViewById(R.id.switch_to_5ghz_hotspot)).setText(R.string.switch_to_5ghz);

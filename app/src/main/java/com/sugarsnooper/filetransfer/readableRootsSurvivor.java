@@ -254,6 +254,39 @@ public class readableRootsSurvivor extends Service implements Runnable {
 
         int i = 0;
         final boolean[] result = {true};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            while (!Environment.isExternalStorageManager()) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (i == 0) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+                                boolean first = Send_Activity.getActivity() || RecieveActivity.getActivity() || PC_Connect_Activity.getActivity() || Mode_Selection_Activity.getActivity() || splash_screen.getActivity() || PC_ConnectActivity.getActivity();
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                boolean second = Send_Activity.getActivity() || RecieveActivity.getActivity() || PC_Connect_Activity.getActivity() || Mode_Selection_Activity.getActivity() || splash_screen.getActivity() || PC_ConnectActivity.getActivity();
+                                result[0] = first || second;
+                                if (!result[0]) {
+                                    break;
+                                }
+                            }
+                        }
+                    }).start();
+                    i++;
+                }
+                if (!result[0]) {
+                    break;
+                }
+            }
+        } else {
             while ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
 
                 try {
@@ -280,13 +313,13 @@ public class readableRootsSurvivor extends Service implements Runnable {
                             }
                         }
                     }).start();
-                    i ++;
+                    i++;
                 }
                 if (!result[0]) {
                     break;
                 }
             }
-
+        }
             new Thread(new Runnable() {
                 @Override
                 public void run() {

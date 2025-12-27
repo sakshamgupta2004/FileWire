@@ -12,10 +12,12 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,9 +34,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
-import com.aditya.filebrowser.Constants;
-import com.aditya.filebrowser.FileBrowser;
+//import com.aditya.filebrowser.Constants;
+//import com.aditya.filebrowser.FileBrowser;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.sugarsnooper.filetransfer.Client.GpsUtils;
@@ -44,6 +47,7 @@ import com.sugarsnooper.filetransfer.ConnectToPC.PCSoftware.PC_ConnectActivity;
 import com.sugarsnooper.filetransfer.Server.Send_Activity;
 
 import java.io.File;
+
 
 public class Mode_Selection_Activity extends CustomisedAdActivity {
 
@@ -161,9 +165,13 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 return true;
-            } else {
+            }
+            else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2 || true) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1972);
                 return false;
+            }
+            else {
+                return true;
             }
         }
         else {
@@ -174,6 +182,7 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1970){
             if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                 startActivity(new Intent(this, Send_Activity.class).putExtra(Strings.FileSelectionRequest, false));
@@ -230,7 +239,9 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
     }
 
     public void gotoserverpage(View view) {
-        if (ask_for_location_permission()) {
+        if (!PermissionHelper.hasRequiredPermissions(this)) {
+            PermissionHelper.requestMissingPermissions(this);
+        } else if (ask_for_location_permission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 new GpsUtils(this).turnGPSOn(new GpsUtils.onGpsListener() {
                     @Override
@@ -239,7 +250,11 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
                             if ((ContextCompat.checkSelfPermission(Mode_Selection_Activity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(Mode_Selection_Activity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                                 startActivity(new Intent(Mode_Selection_Activity.this, Send_Activity.class).putExtra(Strings.FileSelectionRequest, false));
                             } else {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    if (Environment.isExternalStorageManager()) {
+                                        startActivity(new Intent(Mode_Selection_Activity.this, Send_Activity.class).putExtra(Strings.FileSelectionRequest, false));
+                                    }
+                                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1970);
                                 }
                             }
@@ -266,13 +281,19 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
     }
 
     public void gotopcsharepage(View view) {
-
-        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-            startActivity(new Intent(this, PC_ConnectActivity.class));
-        }
-        else{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE }, 1979);
+        if (!PermissionHelper.hasRequiredPermissions(this)) {
+            PermissionHelper.requestMissingPermissions(this);
+        } else {
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                startActivity(new Intent(this, PC_ConnectActivity.class));
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        startActivity(new Intent(Mode_Selection_Activity.this, PC_ConnectActivity.class).putExtra(Strings.FileSelectionRequest, false));
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1979);
+                }
             }
         }
 //        new IntentIntegrator(this).setOrientationLocked(false).initiateScan();
@@ -280,7 +301,9 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
     }
 
     public void gotoclientpage(View view) {
-        if (ask_for_location_permission()) {
+        if (!PermissionHelper.hasRequiredPermissions(this)) {
+            PermissionHelper.requestMissingPermissions(this);
+        } else if (ask_for_location_permission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 new GpsUtils(this).turnGPSOn(new GpsUtils.onGpsListener() {
                     @Override
@@ -299,7 +322,21 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
                                 startActivity(new Intent(Mode_Selection_Activity.this, RecieveActivity.class));
                                 finish();
                             } else {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                    if (Environment.isExternalStorageManager()) {
+                                        if (!new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name)).isDirectory())
+                                            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name)).mkdirs();
+
+                                        for (String type : FileTypeLookup.fileTypeStrings) {
+                                            if (!new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + type + "/").exists()) {
+                                                new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + type + "/").mkdirs();
+                                            }
+                                        }
+
+                                        startActivity(new Intent(Mode_Selection_Activity.this, RecieveActivity.class));
+                                        finish();
+                                    }
+                                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                                     requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1971);
                                 }
                             }
@@ -323,6 +360,7 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
                     startActivity(new Intent(Mode_Selection_Activity.this, RecieveActivity.class));
                     finish();
                 } else {
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1971);
                     }
@@ -340,11 +378,17 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.ftp_server_menu_item) {
-            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            if (!PermissionHelper.hasRequiredPermissions(this)) {
+                PermissionHelper.requestMissingPermissions(this);
+            } else if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
                 startActivity(new Intent(this, PC_Connect_Activity.class));
             }
             else{
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Environment.isExternalStorageManager()) {
+                        startActivity(new Intent(this, PC_Connect_Activity.class));
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE }, 1989);
                 }
             }
@@ -426,12 +470,40 @@ public class Mode_Selection_Activity extends CustomisedAdActivity {
                         new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + type + "/" ).mkdirs();
                 }
             }
-            Intent i = new Intent(this, FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
-            i.putExtra(Constants.INITIAL_DIRECTORY, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),getString(R.string.app_name)).getAbsolutePath());
-            startActivity(i);
+
+//            Intent i = new Intent(this, FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
+//            i.putExtra(Constants.INITIAL_DIRECTORY, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(),getString(R.string.app_name)).getAbsolutePath());
+//            startActivity(i);
         }
         else{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    if (!new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name)).isDirectory())
+                        new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name)).mkdirs();
+
+                    for (String type : FileTypeLookup.fileTypeStrings) {
+                        if (!new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + type + "/" ).exists()) {
+                            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + "/" + getString(R.string.app_name) + "/" + type + "/" ).mkdirs();
+                        }
+                    }
+
+                    Uri uri = FileProvider.getUriForFile(
+                            this,
+                            getPackageName() + ".provider",
+                            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name))
+                    );
+
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+                    if (intent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(this, "No app found to open folder", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE }, 1973);
             }
         }

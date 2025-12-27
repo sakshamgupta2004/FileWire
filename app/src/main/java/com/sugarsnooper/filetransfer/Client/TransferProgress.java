@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aditya.filebrowser.Constants;
-import com.aditya.filebrowser.FileBrowser;
+//import com.aditya.filebrowser.Constants;
+//import com.aditya.filebrowser.FileBrowser;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -396,9 +396,9 @@ public class TransferProgress extends Fragment {
                     .setNeutralButton("Show in Explorer", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(getContext(), FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
-                            i.putExtra(Constants.INITIAL_DIRECTORY, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), getString(R.string.app_name)).getAbsolutePath());
-                            startActivity(i);
+//                            Intent i = new Intent(getContext(), FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
+//                            i.putExtra(Constants.INITIAL_DIRECTORY, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), getString(R.string.app_name)).getAbsolutePath());
+//                            startActivity(i);
                         }
                     })
                     .setNegativeButton("Close", new DialogInterface.OnClickListener() {
@@ -621,7 +621,7 @@ public class TransferProgress extends Fragment {
             String mimeType = mimeMap.getMimeTypeFromExtension(FilenameUtils.getExtension(url.getName()));
             Uri uri;
             try {
-                uri = FileProvider.getUriForFile(getContext(), getContext().getString(R.string.filebrowser_provider), url);
+                uri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider",  url);
             } catch (IllegalArgumentException ie) {
                 if (Build.VERSION.SDK_INT >= 24) {
                     try {
@@ -660,9 +660,9 @@ public class TransferProgress extends Fragment {
 //                }
 //                catch (android.content.ActivityNotFoundException ex)
 //                {
-                    Intent i = new Intent(getActivity(), FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
-                    i.putExtra(Constants.INITIAL_DIRECTORY, url.getAbsolutePath());
-                    startActivity(i);
+//                    Intent i = new Intent(getActivity(), FileBrowser.class); //works for all 3 main classes (i.e FileBrowser, FileChooser, FileBrowserWithCustomHandler)
+//                    i.putExtra(Constants.INITIAL_DIRECTORY, url.getAbsolutePath());
+//                    startActivity(i);
 //                }
             }
         }

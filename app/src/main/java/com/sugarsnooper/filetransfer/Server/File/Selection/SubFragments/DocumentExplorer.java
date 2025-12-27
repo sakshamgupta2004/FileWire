@@ -397,7 +397,7 @@ public class DocumentExplorer extends Fragment implements ListChangeListener {
                     String mimeType = mimeMap.getMimeTypeFromExtension(FilenameUtils.getExtension(file.getName()));
                     Uri uri;
                     try {
-                        uri = FileProvider.getUriForFile(getContext(), getContext().getString(R.string.filebrowser_provider), file);
+                        uri = FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".provider", file);
                     }
                     catch (IllegalArgumentException ie) {
                         if (Build.VERSION.SDK_INT >= 24) {

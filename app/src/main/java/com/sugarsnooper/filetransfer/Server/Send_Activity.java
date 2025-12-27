@@ -25,6 +25,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.stfalcon.imageviewer.StfalconImageViewer;
 import com.sugarsnooper.filetransfer.CustomisedAdActivity;
+import com.sugarsnooper.filetransfer.Mode_Selection_Activity;
 import com.sugarsnooper.filetransfer.R;
 import com.sugarsnooper.filetransfer.Server.File.Selection.FileSelection;
 import com.sugarsnooper.filetransfer.Server.File.Selection.SearchFileFragment;
@@ -56,7 +57,11 @@ public class Send_Activity extends CustomisedAdActivity {
             startFragment();
         }
         else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    startFragment();
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE }, 1979);
             }
         }

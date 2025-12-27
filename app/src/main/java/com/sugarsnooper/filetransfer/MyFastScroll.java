@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 
+
 public class MyFastScroll extends FastScroller {
     private RecyclerView recyclerView;
 

@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+    <com.google.android.exoplayer2.ui.PlayerView
         android:transitionName="openTransition"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

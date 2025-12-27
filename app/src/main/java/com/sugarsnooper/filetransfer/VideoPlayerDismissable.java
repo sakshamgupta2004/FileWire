@@ -16,24 +16,24 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.LoadControl;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+
 
 public class VideoPlayerDismissable extends Activity {
     @Override
@@ -90,76 +90,78 @@ public class VideoPlayerDismissable extends Activity {
         play();
 
     }
-    SimpleExoPlayer player;
-
+    ExoPlayer player;
     private void play() {
-
         String path = getIntent().getStringExtra("URI");
+        if (path == null) return;
 
-        BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-        TrackSelection.Factory videoTrackSelectionFactory =
-                new AdaptiveTrackSelection.Factory(bandwidthMeter);
-        TrackSelector trackSelector =
-                new DefaultTrackSelector(videoTrackSelectionFactory);
+        // 1. Create ExoPlayer instance
+        player = new ExoPlayer.Builder(this).build();
 
-        // 2. Create a default LoadControl
-        LoadControl loadControl = new DefaultLoadControl();
-        // 3. Create the player
-        player = ExoPlayerFactory.newSimpleInstance(getBaseContext(), trackSelector, loadControl);
-
-        SimpleExoPlayerView playerView = (SimpleExoPlayerView) findViewById(R.id.dismissable);
+        // 2. Bind the player to the view
+        PlayerView playerView = findViewById(R.id.dismissable);
         playerView.setPlayer(player);
         playerView.setKeepScreenOn(true);
-        // Produces DataSource instances through which media data is loaded.
-        DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getBaseContext(), Util.getUserAgent(getBaseContext(), "ExoPlayer"));
 
-        // Produces Extractor instances for parsing the media data.
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        // 3. Create MediaItem
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(path));
 
-        // This is the MediaSource representing the media to be played.
-        MediaSource videoSource = new ExtractorMediaSource(Uri.parse(path),
-                dataSourceFactory, extractorsFactory, null, null);
-        // Prepare the player with the source.
-        player.prepare(videoSource);
-        playerView.requestFocus();
+        // 4. Prepare the player
+        player.setMediaItem(mediaItem);
+        player.prepare();
         player.setPlayWhenReady(true);
+
         playerView.hideController();
         findViewById(R.id.overlay_image_view_and_exo_player).setVisibility(View.GONE);
+
+        // 5. Handle display cutout / notch
         WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            layoutParams.layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
         getWindow().setAttributes(layoutParams);
+
+        // 6. Handle controller visibility changes
         playerView.setControllerVisibilityListener(new PlayerControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int visibility) {
-                if (visibility == SimpleExoPlayerView.VISIBLE){
-                    findViewById(R.id.overlay_image_view_and_exo_player).setVisibility(View.VISIBLE);
-                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                View overlay = findViewById(R.id.overlay_image_view_and_exo_player);
+                WindowManager.LayoutParams lp = getWindow().getAttributes();
+
+                if (visibility == View.VISIBLE) {
+                    overlay.setVisibility(View.VISIBLE);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+                        lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
                     }
-                    getWindow().setAttributes(layoutParams);
+                    getWindow().setAttributes(lp);
                     getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-                }
-                else{
-                    findViewById(R.id.overlay_image_view_and_exo_player).setVisibility(View.GONE);
-                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                } else {
+                    overlay.setVisibility(View.GONE);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        layoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                        lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                     }
-                    getWindow().setAttributes(layoutParams);
-                    View decorView = getWindow().getDecorView();
-                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // Set the content to appear under the system bars so that the
-                            // content doesn't resize when the system bars hide and show.
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN // Hide the nav bar and status bar
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                    getWindow().setAttributes(lp);
+                    getWindow().getDecorView().setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    );
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (player != null) {
+            player.release();
+            player = null;
+        }
     }
 
 

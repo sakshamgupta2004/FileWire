@@ -9,4 +9,12 @@
     <dimen name="scroll_popup_min_size">44dp</dimen>
     <dimen name="button_corner">10dp</dimen>
     <dimen name="padding_image_popup_preview">25dp</dimen>
+    <dimen name="fastscroll__bubble_corner">20dp</dimen>
+    <dimen name="fastscroll__bubble_size">50dp</dimen>
+    <dimen name="fastscroll__handle_corner">3dp</dimen>
+    <dimen name="fastscroll__handle_height">30dp</dimen>
+    <dimen name="fastscroll__handle_width">6dp</dimen>
+    <dimen name="fastscroll__handle_inset">9dp</dimen>
+    <dimen name="fastscroll__handle_clickable_width">24dp</dimen>
+    <dimen name="fastscroll__handle_padding">2dp</dimen>
 </resources>

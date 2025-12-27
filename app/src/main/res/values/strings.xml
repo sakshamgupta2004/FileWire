@@ -94,4 +94,7 @@
     <string name="use_material_you">Use Material You</string>
     <string name="use_material">Use Material Theme</string>
     <string name="send_to_pc">Send To PC</string>
+
+    <string name="fastscroll__app_name">RecyclerViewFastScroll</string>
+    <string name="no_app_to_handle">No app to open the file</string>
 </resources>

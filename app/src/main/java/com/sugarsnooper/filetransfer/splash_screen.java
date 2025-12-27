@@ -121,7 +121,7 @@ public class splash_screen extends Activity {
 
     private void switchToMainActivity() {
         startActivity(new Intent(splash_screen.this, Mode_Selection_Activity.class));
-        overridePendingTransition(R.anim.fragment_fade_enter, R.anim.fragment_fade_exit);
+        overridePendingTransition(R.anim.right_to_left_in, R.anim.right_to_left_out);
         finish();
     }
 
